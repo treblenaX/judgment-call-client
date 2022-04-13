@@ -4,6 +4,8 @@ import { useContext, useEffect, useState } from 'react';
 import LobbyComponent from './components/LobbyComponent.js';
 import { Textbox } from 'react-inputs-validation';
 import { doesLobbyExist } from './services/socket';
+import HeaderComponent from './components/HeaderComponent';
+import FooterComponent from './components/FooterComponent';
 
 const ENDPOINT = 'http://localhost:3000/';
 
@@ -25,12 +27,18 @@ function App() {
   }, []);
   
   return (
-    <div className="app-container">
-      {
-        !toLobbyHandle 
-          ? <WelcomeComponent player={ player } setPlayer={ setPlayer } setLobbyHandle={ setLobbyHandle } />
-          : <HandleLobbyComponent player={ player } />
-      }
+    <div className="flex-container">
+      <HeaderComponent />
+      <div className="flex-item body">
+        {
+          !toLobbyHandle 
+            ? <WelcomeComponent player={ player } setPlayer={ setPlayer } setLobbyHandle={ setLobbyHandle } />
+            : <HandleLobbyComponent player={ player } />
+        }
+      </div>
+      <div className="footer">
+        <FooterComponent />
+      </div>
     </div>
   );
 }
@@ -51,14 +59,11 @@ function WelcomeComponent(props) {
 
   return (
     <div className="flex-container">
-      <h1 className="flex-item">
-        Judgment Call
-      </h1>
       <h2 className="flex-item">
-        Welcome! Who should we call you by?
+        Welcome! Who are you?
       </h2>
       <div className="flex-item">
-        <input type="text" id="username-input" onChange={(e) => setPlayer(e.target.value)} />
+        <input type="text" className="input-box" onChange={(e) => setPlayer(e.target.value)} />
         <button type="button" onClick={() => handleNextButton()}>Next</button>
       </div>
     </div>
@@ -71,40 +76,45 @@ function HandleLobbyComponent(props) {
   const [showLobby, setLobby] = useState(null);
   const [goToJoin, setGoToJoin] = useState(false);
 
+  const mainLobbyHTML = (
+    <div className="flex-item">
+      <button type="button" id="join-lobby-page-button" onClick={() => handleJoinLobbyPage(setGoToJoin, true)}>Join an Existing Lobby</button>
+      <button type="button" id="create-lobby-button" onClick={() => handleCreateLobby()}>Create a new Lobby</button>
+    </div>
+  );
+
+  const joinLobbyHTML = (
+    <div className="flex-item">
+      <div className="flex-item">
+        <label>Please enter the existing lobby code to join!</label>
+      </div>
+      <div className="flex-item">
+        <input type="text" id="lobby-code-input" onChange={(e) => setJoinCode(e.target.value)} />
+        <button type="button" id="join-lobby-button" onClick={() => handleJoinLobby()}>Join Lobby</button>
+      </div>
+      <div className="flex-item">
+        <button type="button" id="join-lobby-back-button" onClick={() => handleJoinLobbyPage(setGoToJoin, false)}>Back</button>
+      </div>
+    </div>
+  );
+
   const initHTML = (
-    <div>
-      <div>
+    <div className="flex-container">
+      <div className="flex-item">
+        <h1>
+          Hello, {player}!
+        </h1>
         <h2>
           Will you be joining a lobby? Or creating a new one?
         </h2>
       </div>
-      {
-        !goToJoin
-          ? (       // Main lobby menu
-            <div>
-              <div>
-                <label>Enter Join Code: </label>
-                {/* <Textbox 
-                  attributesInput={{
-                    placeholder: 'Please enter join code here.'
-                  }}
-                  validationOption={{type: 'number', min: 0, max: 6 }} 
-                  onChange={(e) => setJoinCode(e.target.value)} 
-                /> */}
-                <input type="text" id="lobby-code-input" onChange={(e) => setJoinCode(e.target.value)} />
-              </div>
-              <button type="button" id="join-lobby-page-button" onClick={() => handleJoinLobbyPage(setGoToJoin)}>Join an Existing Lobby</button>
-              <button type="button" id="create-lobby-button" onClick={() => handleCreateLobby()}>Create a new Lobby</button>
-            </div>
-          )
-          : (       // Join code prompt menu 
-            <div>
-              <label>Please enter the existing lobby code to join!</label>
-              <input type="text" id="lobby-code-input" onChange={(e) => setJoinCode(e.target.value)} />
-              <button type="button" id="join-lobby-button" onClick={() => handleJoinLobby()}>Join Lobby</button>
-            </div>
-          )
-      }
+      <div className="flex-item">
+        {
+          !goToJoin
+            ? mainLobbyHTML
+            : joinLobbyHTML
+        }
+      </div>
     </div>
   );
 
@@ -112,8 +122,8 @@ function HandleLobbyComponent(props) {
     setLobby(<LobbyComponent player={ player } isHost={ true } />);
   };
 
-  const handleJoinLobbyPage = (setGoToJoin) => {
-    setGoToJoin(true);
+  const handleJoinLobbyPage = (setGoToJoin, bool) => {
+    setGoToJoin(bool);
   };
 
   const handleJoinLobby = () => {

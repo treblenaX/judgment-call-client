@@ -1,3 +1,5 @@
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import socketIOClient from 'socket.io-client';
 import { closeSocketConnection, createSocketConnection, initLobbyState, readyUpPlayer, refreshLobbyInfo, requestLobbyCode, sendLobbyMessage, socket, verifySocketConnection, waitForLobbyInfo } from "../services/socket";
@@ -92,3 +94,23 @@ export default function LobbyComponent(props) {
         </div>
     );
 }
+
+function LoadLobbyComponent(props) {
+    return (
+        <FontAwesomeIcon icon={faSpinner} />
+    );
+}
+
+// function ExecuteLobbyComponent(props) {
+//     return (
+//         <div className="lobby-container">
+//             <h2>
+//                 Lobby Code: { lobbyCode }
+//             </h2>
+//             <button type="button" onClick={ () => handleReady() }>Ready up!</button>
+//             <div className="player-list-container">
+//                 <PlayerListComponent client={ { client: player, isReady: isReady } } lobbyPlayers={ lobbyPlayers } />
+//             </div>
+//         </div>
+//     );
+// }
