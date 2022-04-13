@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import socketIOClient from 'socket.io-client';
-import { closeSocketConnection, createSocketConnection, initLobbyState, refreshLobbyInfo, requestLobbyCode, sendLobbyMessage, socket, verifySocketConnection, waitForLobbyInfo } from "../services/socket";
+import { closeSocketConnection, createSocketConnection, initLobbyState, readyUpPlayer, refreshLobbyInfo, requestLobbyCode, sendLobbyMessage, socket, verifySocketConnection, waitForLobbyInfo } from "../services/socket";
 import PlayerListComponent from "./PlayerListComponent";
 
 const ENDPOINT = 'http://localhost:3000';
@@ -12,6 +12,8 @@ export default function LobbyComponent(props) {
 
     const [connectedToLobby, setConnectedToLobby] = useState(false);
     const [lobbyCode, setLobbyCode] = useState(null);
+    const [isReady, setReady] = useState(false);
+    const [readyStateLock, setReadyStateLock] = useState(false);
 
     // Lobby states
     const [lobbyPlayers, setLobbyPlayers] = useState([{ test: 'test' }]);
@@ -43,7 +45,6 @@ export default function LobbyComponent(props) {
                 console.log('not connected to a lobby');
             } else {
                 const players = await waitForLobbyInfo(lCode);
-                console.log(players);
                 setLobbyPlayers(players);
 
                 resolve();
@@ -59,19 +60,34 @@ export default function LobbyComponent(props) {
             });
     }
 
+    async function handleReady() {
+        if (!readyStateLock) {     
+            setReadyStateLock(true);
+            const client = lobbyPlayers.find((p) => player === p.playerName);
+
+            await readyUpPlayer(lobbyCode, setReady, !isReady);
+
+            // Lock to prevent spamming
+            setTimeout(() => {
+                setReadyStateLock(false);
+            }, 1000);
+        }
+    }
+
     useEffect(() => {
         handleConnection();
 
-        // return () => closeSocketConnection();
+        return () => closeSocketConnection();
     }, []);
     
     return (
-        <div>
+        <div className="lobby-container">
             <h2>
-                Lobby Code: {lobbyCode}
+                Lobby Code: { lobbyCode }
             </h2>
-            <div>
-                <PlayerListComponent lobbyPlayers={lobbyPlayers} />
+            <button type="button" onClick={ () => handleReady() }>Ready up!</button>
+            <div className="player-list-container">
+                <PlayerListComponent client={ { client: player, isReady: isReady } } lobbyPlayers={ lobbyPlayers } />
             </div>
         </div>
     );
