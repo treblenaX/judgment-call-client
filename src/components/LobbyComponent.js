@@ -1,8 +1,7 @@
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import socketIOClient from 'socket.io-client';
-import { closeSocketConnection, createSocketConnection, initLobbyState, readyUpPlayer, refreshLobbyInfo, requestLobbyCode, sendLobbyMessage, socket, verifySocketConnection, waitForLobbyInfo } from "../services/socket";
+import { SocketService } from "../services/SocketService";
 import PlayerListComponent from "./PlayerListComponent";
 
 const ENDPOINT = 'http://localhost:3000';
@@ -12,105 +11,88 @@ export default function LobbyComponent(props) {
     const joinCode = props.joinCode;
     const isHost = props.isHost;
 
-    const [connectedToLobby, setConnectedToLobby] = useState(false);
     const [lobbyCode, setLobbyCode] = useState(null);
     const [isReady, setReady] = useState(false);
     const [readyStateLock, setReadyStateLock] = useState(false);
 
+    // Loading states
+    const [isLoading, setLoading] = useState(true);
+
     // Lobby states
-    const [lobbyPlayers, setLobbyPlayers] = useState([{ test: 'test' }]);
+    const [lobbyPlayers, setLobbyPlayers] = useState([]);
 
-    /**
-     * Connects to the server socket and then gets the lobby code
-     * @returns { connected: boolean, lCode: string | the lobby code}
-     */
-    async function connectToLobby() {
-        return new Promise(async (resolve) => {
-            const request = {
-                player: player,
-                isHost: isHost,
-                joinCode: joinCode
-            }
-            
-            await createSocketConnection();
-            const lCode = await requestLobbyCode(request);
+    /** Server async functions */
+    async function initLobbyConnection() {
+        // Socket should already be connected
+        const connectionRequest = {
+            player: player,
+            isHost: isHost,
+            joinCode: joinCode
+        }
+        // No matter create or join - get the LOBBY CODE
+        const lobbyResponse = await SocketService.connectToLobby(connectionRequest);
+        // Set the lobby code
+        setLobbyCode(lobbyResponse.lCode);
 
-            setLobbyCode(lCode);
+        // Update the lobby information
+        const lobbyInfoResponse = await SocketService.updateLobbyInformation(lobbyResponse.lCode);
+        // Set the players
+        setLobbyPlayers(lobbyInfoResponse);
 
-            resolve({ connected: await initLobbyState(lCode), lCode: lCode });
-        });
+        // LOADING is done
+        setLoading(false);
     }
 
-    async function handleLobbyInformation(connected, lCode) {
-        return new Promise(async (resolve) => {
-            if (!connected) {
-                console.log('not connected to a lobby');
-            } else {
-                const players = await waitForLobbyInfo(lCode);
-                setLobbyPlayers(players);
+    useEffect(() => {
+        // Init lobby connection 
+        initLobbyConnection();
 
-                resolve();
-            }
-        });
-    }
+        // LISTEN - for lobby infromation refresh
+        SocketService.refreshLobbyInformation(setLobbyPlayers);
+        // return () => closeSocketConnection();
+    }, []);
 
-    async function handleConnection() {
-        connectToLobby()
-            .then(async (payload) => {
-                await handleLobbyInformation(payload.connected, payload.lCode);
-                await refreshLobbyInfo(setLobbyPlayers);
-            });
-    }
-
+    /** Click handlers */
     async function handleReady() {
         if (!readyStateLock) {     
+            // Turn on lock to prevent spamming
             setReadyStateLock(true);
-            const client = lobbyPlayers.find((p) => player === p.playerName);
 
-            await readyUpPlayer(lobbyCode, setReady, !isReady);
+            const request = {
+                lobbyCode: lobbyCode,
+                readyState: !isReady
+            }
 
-            // Lock to prevent spamming
+            // Update server ready status
+            const readyStatus = await SocketService.emitReadyStatus(request);
+
+            // Set ready status
+            setReady(readyStatus);
+
             setTimeout(() => {
+                // Turn off lock
                 setReadyStateLock(false);
             }, 1000);
         }
     }
-
-    useEffect(() => {
-        handleConnection();
-
-        return () => closeSocketConnection();
-    }, []);
     
     return (
         <div className="lobby-container">
-            <h2>
-                Lobby Code: { lobbyCode }
-            </h2>
-            <button type="button" onClick={ () => handleReady() }>Ready up!</button>
-            <div className="player-list-container">
-                <PlayerListComponent client={ { client: player, isReady: isReady } } lobbyPlayers={ lobbyPlayers } />
-            </div>
+            {
+                isLoading
+                    ?  
+                    <div>Loading lobby details... <FontAwesomeIcon spin={ true } icon={ faSpinner } /></div>
+                    :
+                    <div>
+                        <h2>
+                            Lobby Code: { lobbyCode }
+                        </h2>
+                        <button type="button" onClick={ () => handleReady() }>Ready up!</button>
+                        <div className="player-list-container">
+                            <PlayerListComponent client={ { client: player, isReady: isReady } } lobbyPlayers={ lobbyPlayers } />
+                        </div>
+                    </div>
+                }
         </div>
     );
 }
-
-function LoadLobbyComponent(props) {
-    return (
-        <FontAwesomeIcon icon={faSpinner} />
-    );
-}
-
-// function ExecuteLobbyComponent(props) {
-//     return (
-//         <div className="lobby-container">
-//             <h2>
-//                 Lobby Code: { lobbyCode }
-//             </h2>
-//             <button type="button" onClick={ () => handleReady() }>Ready up!</button>
-//             <div className="player-list-container">
-//                 <PlayerListComponent client={ { client: player, isReady: isReady } } lobbyPlayers={ lobbyPlayers } />
-//             </div>
-//         </div>
-//     );
-// }

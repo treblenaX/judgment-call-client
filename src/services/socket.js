@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 
 const DEBUG_ENDPOINT = 'http://localhost:3000';
 const PROD_ENDPOINT = 'https://judgment-call.herokuapp.com/';
+const SOCKET_TIMEOUT = 5000;
 
 const DEBUG = true; // @TODO: Change this for prod
 
@@ -25,14 +26,10 @@ const LOBBY_EXIST_RESPONSE = 'LOBBY EXISTENCE RESPONSE';
 
 export var socket = null;
 
-export async function verifySocketConnection() {
-    if (socket == null) {
-        await createSocketConnection();
-    }
-
-    return new Promise(resolve => {
-        resolve(true);
-    });
+export function isSocketAlive() {
+    if (!socket) return false;
+    console.log(socket.connected);
+    return socket.connected;
 }
 
 export async function closeSocketConnection() {
@@ -68,7 +65,7 @@ export async function requestLobbyCode(request) {
 
 export async function doesLobbyExist(lobbyCode) {
     // Socket verification
-    await verifySocketConnection();
+    // await po();
 
     const request = {
         lobbyCode: lobbyCode
@@ -90,10 +87,14 @@ export async function createSocketConnection() {
         socket = io(PROD_ENDPOINT);
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => { 
         socket.on(CLIENT_CONNECTED, (connected) => {
             resolve(connected);
         });
+
+        setTimeout(() => {
+            reject(new Error('Socket connection timed out.'));
+        }, SOCKET_TIMEOUT);
     });
 }
 
@@ -112,29 +113,24 @@ export async function waitForLobbyInfo(lobbyCode) {
 
     return new Promise(resolve => {
         socket.on(SENDING_LOBBY_INFO, (data) => {
+            console.log(data);
             resolve(data);
         });
     });
 }
 
-export async function refreshLobbyInfo(setLobbyPlayers) {
+export function refreshLobbyInfo(setPlayers) {
     socket.on(REFRESH_PLAYER_LIST, (data) => {
-        setLobbyPlayers(data);
+        setPlayers(data);
     });
 }
 
 /** Game States */
-export async function readyUpPlayer(lobbyCode, setReady, readyState) {
-    const request = {
-        lobbyCode: lobbyCode,
-        readyState: readyState
-    }
-
+export async function readyUpPlayer(request) {
     socket.volatile.emit(UPDATE_READY_STATE, request);
 
     return new Promise(resolve => {
         socket.on(CONFIRM_UPDATE_READY_STATE, (confirmedState) => {
-            setReady(confirmedState);
             resolve(confirmedState);
         });
     })

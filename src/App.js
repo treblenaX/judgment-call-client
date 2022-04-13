@@ -6,8 +6,12 @@ import { Textbox } from 'react-inputs-validation';
 import { doesLobbyExist } from './services/socket';
 import HeaderComponent from './components/HeaderComponent';
 import FooterComponent from './components/FooterComponent';
+import { SocketService } from './services/SocketService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const ENDPOINT = 'http://localhost:3000/';
+const TIMEOUT = 5000;
 
 function App() {
   // const [socket, setSocket] = useState(null);
@@ -15,15 +19,11 @@ function App() {
   const [player, setPlayer] = useState(null);
   const [joinCode, setJoinCode] = useState(null);
   const [socketConnection, setConnection] = useState(false);
-  const [toLobbyHandle, setLobbyHandle] = useState(false);
+  const [homePage, toHomePage] = useState(true);
   // const socket = useContext(SocketContext);
 
   useEffect(() => {
-    // console.log(socket);
-    // socket.on('connected', data => console.log(data));
 
-    // CLEAN UP EFFECT
-    // return () => socket.disconnect(); 
   }, []);
   
   return (
@@ -31,9 +31,9 @@ function App() {
       <HeaderComponent />
       <div className="flex-item body">
         {
-          !toLobbyHandle 
-            ? <WelcomeComponent player={ player } setPlayer={ setPlayer } setLobbyHandle={ setLobbyHandle } />
-            : <HandleLobbyComponent player={ player } />
+          homePage 
+            ? <WelcomeComponent player={ player } setPlayer={ setPlayer } toHomePage={ toHomePage } />
+            : <HandleLobbyComponent player={ player } toHomePage={ toHomePage }/>
         }
       </div>
       <div className="footer">
@@ -46,14 +46,14 @@ function App() {
 function WelcomeComponent(props) {
   const player = props.player;
   const setPlayer = props.setPlayer;
-  const setLobbyHandle = props.setLobbyHandle;
+  const toHomePage = props.toHomePage;
 
   const handleNextButton = () => {
     // @TODO: create better validation
     if (!player) {
       alert('Please enter a username.');
     } else {
-      setLobbyHandle(true);
+      toHomePage(false);
     }
   }
 
@@ -72,31 +72,10 @@ function WelcomeComponent(props) {
 
 function HandleLobbyComponent(props) {
   const player = props.player;
+  const toHomePage = props.toHomePage;
   const [joinCode, setJoinCode] = useState(null);
   const [showLobby, setLobby] = useState(null);
   const [goToJoin, setGoToJoin] = useState(false);
-
-  const mainLobbyHTML = (
-    <div className="flex-item">
-      <button type="button" id="join-lobby-page-button" onClick={() => handleJoinLobbyPage(setGoToJoin, true)}>Join an Existing Lobby</button>
-      <button type="button" id="create-lobby-button" onClick={() => handleCreateLobby()}>Create a new Lobby</button>
-    </div>
-  );
-
-  const joinLobbyHTML = (
-    <div className="flex-item">
-      <div className="flex-item">
-        <label>Please enter the existing lobby code to join!</label>
-      </div>
-      <div className="flex-item">
-        <input type="text" id="lobby-code-input" onChange={(e) => setJoinCode(e.target.value)} />
-        <button type="button" id="join-lobby-button" onClick={() => handleJoinLobby()}>Join Lobby</button>
-      </div>
-      <div className="flex-item">
-        <button type="button" id="join-lobby-back-button" onClick={() => handleJoinLobbyPage(setGoToJoin, false)}>Back</button>
-      </div>
-    </div>
-  );
 
   const initHTML = (
     <div className="flex-container">
@@ -111,15 +90,32 @@ function HandleLobbyComponent(props) {
       <div className="flex-item">
         {
           !goToJoin
-            ? mainLobbyHTML
-            : joinLobbyHTML
+            ? 
+            <div className="flex-item">
+              <button type="button" id="join-lobby-page-button" onClick={() => handleJoinLobbyPage(setGoToJoin, true)}>Join an Existing Lobby</button>
+              <button type="button" id="create-lobby-button" onClick={() => handleCreateLobby()}>Create a new Lobby</button>
+            </div>
+            :
+            <div className="flex-item">
+              <div className="flex-item">
+                <label>Please enter the existing lobby code to join!</label>
+              </div>
+              <div className="flex-item">
+                <input type="text" id="lobby-code-input" onChange={(e) => setJoinCode(e.target.value)} />
+                <button type="button" id="join-lobby-button" onClick={() => handleJoinLobby()}>Join Lobby</button>
+              </div>
+              <div className="flex-item">
+                <button type="button" id="join-lobby-back-button" onClick={() => handleJoinLobbyPage(setGoToJoin, false)}>Back</button>
+              </div>
+            </div>
         }
       </div>
     </div>
   );
 
+  /** Handlers */
   const handleCreateLobby = () => {
-    setLobby(<LobbyComponent player={ player } isHost={ true } />);
+    setLobby(<LobbyComponent player={ player } isHost={ true } setLobby={ setLobby } />);
   };
 
   const handleJoinLobbyPage = (setGoToJoin, bool) => {
@@ -144,13 +140,58 @@ function HandleLobbyComponent(props) {
 
   return (
     <div>
-      {
-        !showLobby 
-          ? initHTML
-          : showLobby
-      }
+      <div>
+        { !showLobby ? <LoadingComponent toHomePage={ toHomePage } /> : <span></span> }
+      </div>
+      <div>
+        {
+          !showLobby 
+            ? initHTML
+            : showLobby
+        }
+      </div>
     </div>
   );
+}
+
+function LoadingComponent(props) {
+  const toHomePage = props.toHomePage;
+  const [isLoading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('');
+
+  /** Async functions */
+  async function handleServerInit(setLoading) {
+    setLoadingMessage('Connecting to the server...');
+    const connectionResult = await SocketService.connectToServer();
+
+    // If a connection issue occurs, then reset to home page
+    if (connectionResult.error) {
+      setLoadingMessage('Cannot connect to the server. Redirecting back to the home page.');
+      
+      // Wait for $TIMEOUT to redirect back to the home page
+      await setTimeout(() => { 
+        toHomePage(true);
+      }, TIMEOUT);
+      setLoading(false);
+      return;
+    }
+
+    setLoadingMessage('Connected!');
+    setLoading(false);  
+  }
+
+  useEffect(() => {
+    handleServerInit(setLoading);  
+  }, []);
+
+  return (
+    <div>
+        <span>Server Connection:</span>
+        <p>
+          { loadingMessage } { isLoading ? <FontAwesomeIcon spin={ true } icon={faSpinner} /> : <span></span> }
+        </p>
+    </div>
+  )
 }
 
 export default App;
