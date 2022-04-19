@@ -1,0 +1,9 @@
+$background-color: #ddd;
+$font-color: #000;
+
+.debug-panel {
+    color: $font-color;
+    padding: 16px;
+    width: 100%;
+    background-color: $background-color;
+}
