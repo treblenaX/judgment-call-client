@@ -9,15 +9,17 @@ import FooterComponent from './components/FooterComponent';
 import { SocketService } from './services/SocketService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { LobbyService } from './services/LobbyService';
 
-const ENDPOINT = 'http://localhost:3000/';
+export const ENDPOINT = 'http://localhost:3000';
+
 const TIMEOUT = 5000;
 
 function App() {
   // const [socket, setSocket] = useState(null);
   const [showLobby, setLobby] = useState(null);
   const [player, setPlayer] = useState(null);
-  const [joinCode, setJoinCode] = useState(null);
+  const [lobbyCode, setLobbyCode] = useState(null);
   const [socketConnection, setConnection] = useState(false);
   const [homePage, toHomePage] = useState(true);
   // const socket = useContext(SocketContext);
@@ -73,7 +75,7 @@ function WelcomeComponent(props) {
 function HandleLobbyComponent(props) {
   const player = props.player;
   const toHomePage = props.toHomePage;
-  const [joinCode, setJoinCode] = useState(null);
+  const [lobbyCode, setLobbyCode] = useState(null);
   const [showLobby, setLobby] = useState(null);
   const [goToJoin, setGoToJoin] = useState(false);
 
@@ -101,7 +103,7 @@ function HandleLobbyComponent(props) {
                 <label>Please enter the existing lobby code to join!</label>
               </div>
               <div className="flex-item">
-                <input type="text" id="lobby-code-input" onChange={(e) => setJoinCode(e.target.value)} />
+                <input type="text" id="lobby-code-input" onChange={(e) => setLobbyCode(e.target.value)} />
                 <button type="button" id="join-lobby-button" onClick={() => handleJoinLobby()}>Join Lobby</button>
               </div>
               <div className="flex-item">
@@ -114,28 +116,47 @@ function HandleLobbyComponent(props) {
   );
 
   /** Handlers */
-  const handleCreateLobby = () => {
-    setLobby(<LobbyComponent player={ player } isHost={ true } setLobby={ setLobby } />);
+  const handleCreateLobby = async () => {
+    // @TODO: learn about how to structure network stuff
+    // 1. Build request
+    const request = {
+      playerName: player,
+      newLobby: true
+    };
+
+    // 2. funnel request through
+    const response = await LobbyService.createLobby(request);
+    console.log(response);
+  
+    // setLobby(<LobbyComponent player={ player } isHost={ true } setLobby={ setLobby } />);
   };
 
   const handleJoinLobbyPage = (setGoToJoin, bool) => {
     setGoToJoin(bool);
   };
 
-  const handleJoinLobby = () => {
+  const handleJoinLobby = async () => {
     // @TODO: create better validation
-    if (!joinCode) {
-      alert('Please enter a join code.');
-    } else {
-      doesLobbyExist(joinCode)
-        .then((existence) => {
-          if (existence) {
-            setLobby(<LobbyComponent player={ player } isHost={ false } joinCode={ joinCode } />)
-          } else {
-            alert('lobby does not exist');  // @TODO: Better handling of error
-          }
-        });
-    }
+    // if (!lobbyCode) {
+    //   alert('Please enter a join code.');
+    // } else {
+      const request = {
+        playerName: player,
+        lobbyCode: lobbyCode
+      }
+      const response = await LobbyService.joinLobby(request);
+
+      console.log(response);
+
+      // doesLobbyExist(lobbyCode)
+      //   .then((existence) => {
+      //     if (existence) {
+      //       setLobby(<LobbyComponent player={ player } isHost={ false } lobbyCode={ lobbyCode } />)
+      //     } else {
+      //       alert('lobby does not exist');  // @TODO: Better handling of error
+      //     }
+      //   });
+    // }
   };
 
   return (
@@ -169,9 +190,9 @@ function LoadingComponent(props) {
       setLoadingMessage('Cannot connect to the server. Redirecting back to the home page.');
       
       // Wait for $TIMEOUT to redirect back to the home page
-      await setTimeout(() => { 
-        toHomePage(true);
-      }, TIMEOUT);
+      // await setTimeout(() => { 
+      //   toHomePage(true);
+      // }, TIMEOUT);
       setLoading(false);
       return;
     }
@@ -181,7 +202,7 @@ function LoadingComponent(props) {
   }
 
   useEffect(() => {
-    handleServerInit(setLoading);  
+    // handleServerInit(setLoading);  
   }, []);
 
   return (

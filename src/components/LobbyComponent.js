@@ -45,10 +45,10 @@ export default function LobbyComponent(props) {
 
     useEffect(() => {
         // Init lobby connection 
-        initLobbyConnection();
+        // initLobbyConnection();
 
         // LISTEN - for lobby infromation refresh
-        SocketService.refreshLobbyInformation(setLobbyPlayers);
+        // SocketService.refreshLobbyInformation(setLobbyPlayers);
         // return () => closeSocketConnection();
     }, []);
 
