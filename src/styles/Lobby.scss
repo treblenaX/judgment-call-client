@@ -1,0 +1,43 @@
+$color-dark-gray: #707070;
+
+.page-container {
+    grid-row-start: 1;
+    grid-row-end: -1;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+}
+
+main {
+    grid-column-start: 2;
+    grid-column-end: 2;
+    width: 100%;
+    align-self: center;
+    justify-self: center;
+}
+
+#title {
+    text-align: center;
+    font-family: 'Roboto Slab', sans-serif;
+}
+
+.player-list-conteiner {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.player-name {
+    font-family: 'Roboto Slab', sans-serif;
+    font-size: 1.5em;
+}
+
+.player-status {
+    font-family: 'Roboto Slab', sans-serif;
+    font-size: 0.75em;
+    text-align: right;
+}
+
+.player-name-placeholder {
+    font-family: 'Roboto Slab', sans-serif;
+    font-size: 1.5em;
+    color: $color-dark-gray;
+}

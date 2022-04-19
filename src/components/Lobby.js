@@ -1,8 +1,52 @@
 import '../styles/Lobby.scss';
+import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
 
 function Lobby() {
+    const onClickReady = (e) => {
+        console.log('ready');
+    };
+
     return (
-        <p>Lobby</p>
+        <div className='page-container'>
+            <main>
+                <Stack
+                    direction='column'
+                    spacing={2}
+                >
+                    <h1 id='title'>LOBBY <span id='code'>#123456</span></h1>
+                    <Divider/>
+                    <PlayerList />
+                    <Divider/>
+                    <Button 
+                        variant="contained"
+                        color="secondary"
+                        onClick={onClickReady}>
+                        Ready
+                    </Button>
+                </Stack>
+            </main>
+        </div>
+    );
+}
+
+function PlayerList(players) {
+    const playerElements = ['Alan', 'Elbert', 'Nate', 'James', null, null].map((player, i) => {
+        if (player) {
+            return (
+                <h3 key={i} className='player-name'>{player}</h3>
+            )
+        }
+        return (
+            <h3 key={i} className='player-name-placeholder'>None</h3>
+        )
+    });
+
+    return (
+        <div>
+            {playerElements}
+        </div>
     )
 }
 
