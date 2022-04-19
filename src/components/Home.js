@@ -4,12 +4,17 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
 function Home() {
-    const onClickJoin = () => {
+    const onClickJoin = (e) => {
         console.log('join');
+        const name = document.getElementById('input-name').value;
+        const code = document.getElementById('input-code').value;
+        console.log(name, code);
     };
 
-    const onClickCreate = () => {
+    const onClickCreate = (e) => {
         console.log('create');
+        const name = document.getElementById('input-name').value;
+        console.log(name);
     };
 
     return (
@@ -21,6 +26,7 @@ function Home() {
                 >
                     <h1 id='title'>JUDGEMENT CALL</h1>
                     <TextField 
+                        required
                         fullWidth
                         className='text-field'
                         id="input-name" 
