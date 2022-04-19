@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
 function Home() {
+    // TODO: Handle join click
     const onClickJoin = (e) => {
         console.log('join');
         const name = document.getElementById('input-name').value;
@@ -11,6 +12,7 @@ function Home() {
         console.log(name, code);
     };
 
+    // TODO: Handle create click
     const onClickCreate = (e) => {
         console.log('create');
         const name = document.getElementById('input-name').value;
@@ -20,10 +22,7 @@ function Home() {
     return (
         <div className='page-container'>
             <main>
-                <Stack
-                    direction='column'
-                    spacing={2}
-                >
+                <Stack direction='column' spacing={2}>
                     <h1 id='title'>JUDGEMENT CALL</h1>
                     <TextField 
                         required
@@ -32,21 +31,15 @@ function Home() {
                         id="input-name" 
                         label="Name" 
                         variant="outlined" 
-                        margin="normal"
-                    />
+                        margin="normal" />
                     <TextField 
                         fullWidth
                         className='text-field'
                         id="input-code" 
                         label="Room Code (Optional)" 
                         variant="outlined" 
-                        margin="normal"
-                    />
-                    <Stack 
-                        spacing={2}
-                        direction='row'
-                        justifyContent='center'
-                    >
+                        margin="normal" />
+                    <Stack spacing={2} direction='row' justifyContent='center'>
                         <Button 
                             variant="contained"
                             color="secondary"
