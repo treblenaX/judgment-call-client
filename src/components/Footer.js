@@ -1,9 +1,10 @@
 import '../styles/Footer.scss';
 
-function Footer() {
+function Footer(props) {
+    const playerStatus = props.playerStatus ? props.playerStatus : 'Made With <3 By Elbert & Alan';
     return (
         <footer>
-            Footer
+            <span id='player-status'>{playerStatus}</span>
         </footer>
     )
 }
