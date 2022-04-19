@@ -4,4 +4,6 @@ $text-color: #fff;
 footer {
     background-color: $background-color;
     color: $text-color;
+    grid-row-start: -1;
+    grid-row-end: -1;
 }
