@@ -1,21 +1,32 @@
-import { ENDPOINT } from '../App.js';
-import { SocketHandler } from './socket.js';
+import { SERVER_ENDPOINT } from '../components/App.js';
 import { SocketService } from './SocketService.js';
 
 const API_ENDPOINT = '/api/lobby/';
 
 export class LobbyService {
+    static isAPIAlive = async () => {
+        try {
+            const callpoint = SERVER_ENDPOINT + API_ENDPOINT;
+            const response = await fetch(callpoint);
+            const result = await response.text();
+
+            return Boolean(result);
+        } catch (error) {
+            throw new Error(`API handshake error: ${error}`);
+        }
+    }
     /**
      * Requests to the server to create a lobby
-     * @param {*} request 
-     * @returns {
+     * @param { Object } request
      *  lobbyCode: string
-     * }
+     * 
+     * @returns { * } 
+     *  lobby: Lobby object
      */
     static createLobby = async (request) => {
         try {
             // Build the endpoint
-            const callpoint = ENDPOINT + API_ENDPOINT + 'createLobby';
+            const callpoint = SERVER_ENDPOINT + API_ENDPOINT + 'createLobby';
             // POST request to create lobby 
             const response = await fetch(callpoint, {
                 method: 'POST',
@@ -35,15 +46,22 @@ export class LobbyService {
             };
 
             // On 'connection' - socket to join lobby
-            return await SocketHandler.joinLobby(newRequest);
+            return await SocketService.joinLobby(newRequest);
         } catch (error) {
-            return error;
+            throw new Error(`createLobby error: ${error}`);
         }
     }
 
+    /**
+     * 
+     * @param { * } request
+     *  lobbyCode: string
+     * @returns { * }
+     *  lobby: Lobby object
+     */
     static joinLobby = async (request) => {
         try {
-            const baseUrl = ENDPOINT + API_ENDPOINT;
+            const baseUrl = SERVER_ENDPOINT + API_ENDPOINT;
             // Check if the lobby exists
             const existenceUrl = baseUrl + 'isValid?lobbyCode=' + request.lobbyCode;
 
@@ -54,9 +72,9 @@ export class LobbyService {
             if (existenceResults.error) throw new Error(existenceResults.error);
 
             // On 'connection' - socket to join lobby
-            return await SocketHandler.joinLobby(request);
+            return await SocketService.joinLobby(request);
         } catch (error) {
-            return error;
+            throw new Error(`joinLobby error: ${error}`);
         }
     }
 
@@ -64,12 +82,12 @@ export class LobbyService {
 
     static doesLobbyExist = async (request) => {
         // Build the endpoint
-        const callpointBase = ENDPOINT + API_ENDPOINT + 'isValid';
+        const callpointBase = SERVER_ENDPOINT + API_ENDPOINT + 'isValid';
         const callpoint = callpointBase + '?lobbyCode=' + request.lobbyCode;
         // GET request to check if lobby is valid
-        const response = await fetch(callpoint, {
-            method: 'GET'
-        })
+        const response = await fetch(callpoint);
+
+        console.log('hello');
 
         return await response.json();
     }
