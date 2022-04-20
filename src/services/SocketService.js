@@ -40,27 +40,4 @@ export class SocketService {
     //         resolve({ connectedToLobby: connection, lCode: lCode });
     //     });
     // }
-
-    /**
-     * Update lobby information
-     * @param {*} connected 
-     * @param {*} lCode 
-     * @param {*} setLobbyPlayers 
-     * @returns 
-     */
-    static async updateLobbyInformation(lCode) {
-        return new Promise(async (resolve) => {
-            const players = await waitForLobbyInfo(lCode);
-
-            resolve(players);
-        });
-    }
-
-    static async emitReadyStatus(request) {
-        return await readyUpPlayer(request);
-    }
-
-    static refreshLobbyInformation(setLobbyPlayers) {
-        return refreshLobbyInfo(setLobbyPlayers);
-    }
 }
