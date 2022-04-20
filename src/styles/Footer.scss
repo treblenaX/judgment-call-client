@@ -1,0 +1,15 @@
+$background-color: #A6924D;
+$text-color: #fff;
+
+footer {
+    background-color: $background-color;
+    color: $text-color;
+    grid-row-start: -1;
+    grid-row-end: -1;
+    text-align: center;
+    padding: 0.5em;
+}
+
+#player-status {
+    font-size: 1em;
+}
