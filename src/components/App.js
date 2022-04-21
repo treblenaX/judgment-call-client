@@ -5,15 +5,17 @@ import Home from './Home';
 import Lobby from './Lobby';
 import React, { useState } from 'react';
 
-const DEBUG = false;
+const DEBUG = true;
 
-export const SERVER_ENDPOINT = (DEBUG) ? 'http://localhost:3000' : 'http://judgment-call.herokuapp.com';
+// @TODO handle this better
+export const SERVER_ENDPOINT = (DEBUG) ? 'http://localhost:3000' : 'https://judgment-call.herokuapp.com';
 
 function App() {
   // App data states
   const [playerName, setPlayerName] = useState('');
   const [joinLobbyCode, setJoinLobbyCode] = useState('');
   const [isClientHost, setClientHost] = useState(false);
+  const [errorState, setErrorState] = useState(null);
 
   // whether or not to show the debug panel
   const [showDebug, setShowDebug] = useState(DEBUG);

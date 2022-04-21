@@ -1,12 +1,9 @@
 import io from 'socket.io-client';
+import { SERVER_ENDPOINT } from '../components/App.js';
 import { ClientSocketStates } from './socket-states/ClientSocketStates';
 import { ServerSocketStates } from './socket-states/ServerSocketStates';
 
-const DEBUG_ENDPOINT = 'http://localhost:3000/';
-const PROD_ENDPOINT = 'https://judgment-call.herokuapp.com/';
 const SOCKET_TIMEOUT = 5000;
-
-const DEBUG = true; // @TODO: Change this for prod
 
 const BASE_CONNECT = 'connect';
 
@@ -36,7 +33,7 @@ export class SocketService {
     static async verifySocketConnection() {
         return new Promise(async (resolve, reject) => {
             if (!this.isSocketAlive()) { // Socket is not connected/initialized
-                socket = (DEBUG) ? io(DEBUG_ENDPOINT): io(PROD_ENDPOINT);
+                socket = io(SERVER_ENDPOINT);
 
                 // Timeout if the socket does not connect
                 setTimeout(() => {
@@ -57,17 +54,23 @@ export class SocketService {
 
     static isSocketAlive = () => { return socket != null && socket.connected }
 
-    // lobbyCode
+    /** Listeners */
     static lobbyRefreshListener(setLobbyState, setClientPlayer) {
         socket.on(ServerSocketStates.UPDATE_LOBBY_INFORMATION, (response) => {
             const lobby = response.lobby;
             const players = lobby.players;
-            
+
             // @TODO: error handling
             setLobbyState(lobby);
 
             // refresh client player
             setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
+        });
+    }
+
+    static errorListener(setErrorState) {
+        socket.on(ServerSocketStates.ERROR, (error) => {
+            setErrorState(error);
         });
     }
 }
