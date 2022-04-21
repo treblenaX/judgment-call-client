@@ -50,13 +50,23 @@ function Lobby(props) {
             setLobbyPlayers(lobbyState.players);
 
             // Listen for lobby state refresh
-            SocketService.lobbyRefreshListener(setLobbyState);
+            SocketService.lobbyRefreshListener(setLobbyState, setClientPlayer);
         }
-    }, [lobbyState]);
+    }, [lobbyState]);   // RERUNS - when lobby state needs to refresh
 
     // TODO: Handle ready up click
-    const onClickReady = (e) => {
-        console.log(lobbyPlayers);
+    const onClickReady = async (e) => {
+        // Build request
+        const request = {
+            lobbyCode: lobbyCode,
+            pId: clientPlayer.pId,
+            readyState: !clientPlayer.readyState
+        }
+
+        // Send socket request
+        SocketService.togglePlayerReady(request);
+
+        // Change local client player ready status on success
     };
 
     return (
@@ -94,9 +104,16 @@ function PlayerList(props) {
         for (let i = 0; i < 6; i++) {
             if (players && i < players.length) { // if finally connected
                 const playerName = players[i].playerName;
+                const playerReady = players[i].readyState;
 
-                // Show connected player
-                arr.push(<h3 key={i} className='player-name'>{playerName}</h3>);
+                const readyText = (playerReady) ? 'READY' : 'NOT READY';
+
+                // Show connected player - @TODO: Handle ready state text
+                arr.push(
+                    <div key={i}>
+                        <h3 className='player-name'>{playerName + '        ' + readyText}</h3>
+                    </div>
+                );
             } else {
                 // Show empty spot
                 arr.push(<h3 key={i} className='player-name-placeholder'>None</h3>);

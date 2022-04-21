@@ -51,16 +51,23 @@ export class SocketService {
         });
     }
 
-    static isSocketAlive() {
-        if (!socket) return false;
-        return socket.connected;
+    static togglePlayerReady(request) {
+        socket.volatile.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
     }
 
+    static isSocketAlive = () => { return socket != null && socket.connected }
+
     // lobbyCode
-    static lobbyRefreshListener(setLobbyState) {
+    static lobbyRefreshListener(setLobbyState, setClientPlayer) {
         socket.on(ServerSocketStates.UPDATE_LOBBY_INFORMATION, (response) => {
+            const lobby = response.lobby;
+            const players = lobby.players;
+            
             // @TODO: error handling
-            setLobbyState(response.lobby);
+            setLobbyState(lobby);
+
+            // refresh client player
+            setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
         });
     }
 }
