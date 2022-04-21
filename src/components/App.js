@@ -5,7 +5,6 @@ import Home from './Home';
 import Lobby from './Lobby';
 import React, { useState } from 'react';
 
-<<<<<<< HEAD
 const DEBUG = true;
 
 export const SERVER_ENDPOINT = (DEBUG) ? 'http://localhost:3000' : 'http://judgment-call.herokuapp.com/';
@@ -18,11 +17,6 @@ function App() {
 
   // whether or not to show the debug panel
   const [showDebug, setShowDebug] = useState(DEBUG);
-=======
-function App() {
-  // whether or not to show the debug panel
-  const [showDebug, setShowDebug] = useState(true);
->>>>>>> 5499a50140a13018f08e38d7005faf0c03d376fb
 
   // defines what page to display
   const [pageId, setPage] = useState('home');
@@ -31,7 +25,6 @@ function App() {
   const getPage = () => {
     switch (pageId) {
       case 'home':
-<<<<<<< HEAD
         return <Home 
                   setPlayerNameCallback={setPlayerName} 
                   setPageCallback={setPage} 
@@ -44,11 +37,6 @@ function App() {
                   isClientHost={isClientHost}
                   joinLobbyCode={joinLobbyCode}
                 />;
-=======
-        return <Home />;
-      case 'lobby':
-        return <Lobby />;
->>>>>>> 5499a50140a13018f08e38d7005faf0c03d376fb
       default:
         return <>404: No such page {pageId}</>;
     }
