@@ -5,9 +5,9 @@ import Home from './Home';
 import Lobby from './Lobby';
 import React, { useState } from 'react';
 
-const DEBUG = true;
+const DEBUG = false;
 
-export const SERVER_ENDPOINT = (DEBUG) ? 'http://localhost:3000' : 'http://judgment-call.herokuapp.com/';
+export const SERVER_ENDPOINT = (DEBUG) ? 'http://localhost:3000' : 'http://judgment-call.herokuapp.com';
 
 function App() {
   // App data states
