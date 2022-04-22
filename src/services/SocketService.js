@@ -48,6 +48,7 @@ export class SocketService {
         });
     }
 
+    /** Ready Functions */
     static togglePlayerReady(request) {
         socket.volatile.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
     }
@@ -65,6 +66,19 @@ export class SocketService {
 
             // refresh client player
             setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
+        });
+    }
+
+    static startGameListener() {
+        socket.on(ServerSocketStates.ALL_PLAYERS_READY, (response) => {
+            // Start game counter
+
+        });
+    }
+
+    static stopCountDownListener() {
+        socket.on(ServerSocketStates.STOP_COUNTDOWN, (response) => {
+            // Stop game counter
         });
     }
 

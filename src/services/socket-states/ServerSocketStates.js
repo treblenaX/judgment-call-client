@@ -4,5 +4,8 @@ export const ServerSocketStates = {
 
     /** Room Socket States */
     UPDATE_LOBBY_INFORMATION: 'server:room:updatelobbyinformation',
-    REFRESH_LOBBY_RESPONSE: 'server:room:refreshlobbyresponse'
+    ALL_PLAYERS_READY: 'server:room:allplayersready',
+    STOP_COUNTDOWN: 'server:room:stopcountdown',
+    START_DEAL: 'server:room:startdeal',
+    DEALT_CARDS: 'server:room:dealtcards',
 }

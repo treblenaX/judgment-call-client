@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import { LobbyService } from '../services/LobbyService.js';
 import { SocketService } from '../services/SocketService.js';
+import { Socket } from 'socket.io-client';
 
 function Lobby(props) {
     const playerName = props.playerName;
@@ -18,6 +19,7 @@ function Lobby(props) {
     const [clientPlayer, setClientPlayer] = useState(null);
     const [lobbyPlayers, setLobbyPlayers] = useState(null);
     const [lobbyCode, setLobbyCode] = useState(null);
+    const [gameCounter, setGameCounter] = useState(null);
 
     // ASYNC HELPERS
     const connectToLobby = async (request) => {

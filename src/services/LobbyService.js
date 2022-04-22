@@ -91,8 +91,4 @@ export class LobbyService {
 
         return await response.json();
     }
-
-    static togglePlayerReady = async (request) => {
-
-    }
 }
