@@ -5,6 +5,7 @@ import { ThreeDots } from 'react-loading-icons';
 import { useEffect } from 'react';
 import { LobbyService } from '../services/LobbyService';
 import { GameStates } from '../constants/GameStates';
+import { SocketService } from '../services/SocketService';
 
 function Loading(props) {
     const isClientHost = props.clientInfo.isClientHost;
@@ -12,13 +13,7 @@ function Loading(props) {
     const joinLobbyCode = props.clientInfo.joinLobbyCode;
 
     // Overall lobby state 
-    const setLobbyStateCallback = props.setLobbyStateCallback;
-    // Setting lobby players
-    const setLobbyPlayersCallback = props.setLobbyPlayersCallback;
-    // Setting the `readyStatus` object of the lobby
-    const setLobbyReadyStatusCallback = props.setLobbyReadyStatusCallback;
-    // Setting the game state after load
-    const setGameStateCallback = props.setGameStateCallback;
+    const lobbyStateCallbacks = props.lobbyStateCallbacks;
     // Setting the player of the client
     const setClientPlayerCallback = props.setClientPlayerCallback;
     // Setting whether or not the client is the 'host'
@@ -30,13 +25,17 @@ function Loading(props) {
 
     // ASYNC HELPERS
     const connectToLobby = async (request) => {
+        console.log(request);
         const lobbyResponse = (isClientHost) 
             ? await LobbyService.createLobby(request) 
             : await LobbyService.joinLobby(request);
 
-        setLobbyStateCallback(lobbyResponse.lobby);
         setClientPlayerCallback(lobbyResponse.clientPlayer);
         setLobbyCodeCallback(lobbyResponse.lobby.lobbyCode);
+
+        // Listen for lobby state refresh
+        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
+        SocketService.errorListener(console.log);
 
         // Direct user to `lobby`
         setPageCallback('lobby');
@@ -49,8 +48,6 @@ function Loading(props) {
             lobbyCode: joinLobbyCode
         }
 
-        // Set 'LOBBY' game state
-        setGameStateCallback(GameStates.LOADING);
         connectToLobby(request);
     }, []);
 

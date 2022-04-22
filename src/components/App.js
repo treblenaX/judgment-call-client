@@ -70,9 +70,7 @@ function App() {
         return <Loading 
                   clientInfo={clientInfo}
                   setLobbyStateCallback={setLobbyState}
-                  setLobbyPlayersCallback={setLobbyPlayers}
-                  setLobbyReadyStatusCallback={setLobbyReadyStatus}
-                  setGameStateCallback={setGameState}
+                  lobbyStateCallbacks={setLobbyStateCallbacks}
                   setClientPlayerCallback={setClientPlayer}
                   setClientHostCallback={setClientHost}
                   setLobbyCodeCallback={setLobbyCode}

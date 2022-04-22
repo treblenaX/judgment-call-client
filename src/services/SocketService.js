@@ -61,6 +61,7 @@ export class SocketService {
     /** Listeners */
     static lobbyRefreshListener(lobbyStateCallbacks, setClientPlayer) {
         socket.on(ServerSocketStates.UPDATE_LOBBY_INFORMATION, (response) => {
+            console.log(response);
             const serverMessage = response.message;
             const lobby = response.lobby;
             const players = lobby.players;
