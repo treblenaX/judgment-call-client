@@ -6,12 +6,13 @@ import Lobby from './Lobby';
 import TextAreaModule from './TextAreaModule';
 import Judgement from './Judgement';
 import Scenario from './Scenario';
+import Discussion from './Discussion';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 
 const DEBUG = true;
-const PAGE_IDS = ['home', 'lobby', 'textarea', 'judgement', 'scenario'];
+const PAGE_IDS = ['home', 'lobby', 'textarea', 'judgement', 'scenario', 'discussion'];
 
 // @TODO handle this better
 export const SERVER_ENDPOINT = (DEBUG) ? 'http://localhost:3000' : 'https://judgment-call.herokuapp.com';
@@ -51,6 +52,8 @@ function App() {
         return <Judgement />;
       case 'scenario':
         return <Scenario />;
+      case 'discussion':
+        return <Discussion />;
       default:
         return <>404: No such page {pageId}</>;
     }
