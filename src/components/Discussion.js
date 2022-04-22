@@ -13,17 +13,28 @@ import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 
 function Discussion(props) {
+    // TODO: Get real props from server
+    props = {
+        stakeholderTitle: 'Stakeholder Title',
+        review: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
+        rating: 3,
+        data: {
+            benefits: ['lorem', 'ipsum', 'dolor'],
+            harms: ['lorem', 'ipsum', 'dolor'],
+            themes: ['lorem', 'ipsum', 'dolor'],
+        }
+    }
+
+    // ui state
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [activeCol, setActiveCol] = useState(null);
+
+
     // TODO: Handle ready
     const onClickReady = async (e) => {
         console.log('ready');
     }
-
-    // dialog state
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    // col state
-    const [activeCol, setActiveCol] = useState(null);
-
+    
     // onDialogOpen
     const onDialogOpen = (col) => {
         console.log('Opening dialog with col ' + col);
@@ -37,18 +48,6 @@ function Discussion(props) {
         const col = activeCol;
         console.log(col, data);
         setDialogOpen(false);
-    }
-
-    // TODO: Get real props from server
-    props = {
-        stakeholderTitle: 'Stakeholder Title',
-        review: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
-        rating: 3,
-        data: {
-            benefits: ['lorem', 'ipsum', 'dolor'],
-            harms: ['lorem', 'ipsum', 'dolor'],
-            themes: ['lorem', 'ipsum', 'dolor'],
-        }
     }
 
     return (
