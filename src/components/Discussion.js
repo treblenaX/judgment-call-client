@@ -67,7 +67,7 @@ function Discussion(props) {
                 </Stack>
             </PageContainer>
             <Dialog open={dialogOpen} onClose={onDialogClose}>
-                <DialogTitle>Add a {activeCol.substring(0, activeCol.length - 1)}</DialogTitle>
+                <DialogTitle>Add a {activeCol ? activeCol.substring(0, activeCol.length - 1) : 'null'}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
