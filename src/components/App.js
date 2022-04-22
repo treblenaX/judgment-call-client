@@ -4,6 +4,7 @@ import DebugMenu from './DebugMenu';
 import Home from './Home';
 import Lobby from './Lobby';
 import TextAreaModule from './TextAreaModule';
+import Judgement from './Judgement';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
@@ -44,6 +45,8 @@ function App() {
                 />;
       case 'textarea':
         return <TextAreaModule />;
+      case 'judgement':
+        return <Judgement />;
       default:
         return <>404: No such page {pageId}</>;
     }

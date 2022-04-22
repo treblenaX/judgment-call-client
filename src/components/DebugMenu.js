@@ -1,6 +1,6 @@
 import '../styles/DebugMenu.scss'
 
-const PAGE_IDS = ['home', 'lobby', 'textarea'];
+const PAGE_IDS = ['home', 'lobby', 'textarea', 'judgement'];
 
 function DebugMenu(props) {
     const onHideDebug = () => {
