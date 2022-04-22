@@ -4,6 +4,7 @@ import DebugMenu from './DebugMenu';
 import Home from './Home';
 import Lobby from './Lobby';
 import React, { useState } from 'react';
+import { GameStates } from '../constants/GameStates';
 
 const DEBUG = true;
 
@@ -16,6 +17,12 @@ function App() {
   const [joinLobbyCode, setJoinLobbyCode] = useState('');
   const [isClientHost, setClientHost] = useState(false);
   const [errorState, setErrorState] = useState(null);
+
+  // States that have passed through multiple components 
+  const [isLoading, setLoading] = useState(false);
+  const [gameState, setGameState] = useState(GameStates.INIT);
+  const [lobbyPlayers, setLobbyPlayers] = useState(null);
+  const [lobbyReadyStatus, setLobbyReadyStatus] = useState(null);
 
   // whether or not to show the debug panel
   const [showDebug, setShowDebug] = useState(DEBUG);
@@ -38,6 +45,12 @@ function App() {
                   playerName={playerName}
                   isClientHost={isClientHost}
                   joinLobbyCode={joinLobbyCode}
+                  lobbyPlayers={lobbyPlayers}
+                  isLoading={isLoading}
+                  setLobbyPlayersCallback={setLobbyPlayers}
+                  setLobbyReadyStatusCallback={setLobbyReadyStatus}
+                  setGameStateCallback={setGameState}
+                  setLoadingCallback={setLoading}
                 />;
       default:
         return <>404: No such page {pageId}</>;
@@ -48,7 +61,11 @@ function App() {
     <>
       {showDebug ? <DebugMenu setDebugCallback={setShowDebug} setPageCallback={setPage} /> : null}
       { getPage() }
-      <Footer />
+      <Footer 
+        lobbyPlayers={lobbyPlayers}
+        lobbyReadyStatus={lobbyReadyStatus}
+        gameState={gameState}
+      />
     </>
   );
 }

@@ -5,21 +5,25 @@ import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import { LobbyService } from '../services/LobbyService.js';
 import { SocketService } from '../services/SocketService.js';
-import { Socket } from 'socket.io-client';
+import { GameStates } from '../constants/GameStates';
 
 function Lobby(props) {
     const playerName = props.playerName;
     const isClientHost = props.isClientHost;
     const joinLobbyCode = props.joinLobbyCode;
+    const lobbyPlayers = props.lobbyPlayers;
+
+    const setLobbyPlayersCallback = props.setLobbyPlayersCallback;
+    const setLobbyReadyStatusCallback = props.setLobbyReadyStatusCallback;
+    const setGameStateCallback = props.setGameStateCallback;
+    const setLoadingCallback = props.setLoadingCallback;    //@TODO: create loading state
 
     let initLoad = true;
 
     // Lobby data
     const [lobbyState, setLobbyState] = useState(null);
     const [clientPlayer, setClientPlayer] = useState(null);
-    const [lobbyPlayers, setLobbyPlayers] = useState(null);
     const [lobbyCode, setLobbyCode] = useState(null);
-    const [gameCounter, setGameCounter] = useState(null);
 
     // ASYNC HELPERS
     const connectToLobby = async (request) => {
@@ -29,10 +33,12 @@ function Lobby(props) {
                 const lobbyResponse = await LobbyService.createLobby(request);
                 setLobbyState(lobbyResponse.lobby);
                 setClientPlayer(lobbyResponse.clientPlayer);
+                setLobbyCode(lobbyResponse.lobby.lobbyCode);
             } else {
                 const lobbyResponse = await LobbyService.joinLobby(request);
                 setLobbyState(lobbyResponse.lobby);
                 setClientPlayer(lobbyResponse.clientPlayer);
+                setLobbyCode(lobbyResponse.lobby.lobbyCode);
             }
         }
     };
@@ -45,14 +51,18 @@ function Lobby(props) {
                 lobbyCode: joinLobbyCode
             }
 
+            // Set 'LOBBY' game state
+            setGameStateCallback(GameStates.LOBBY);
             connectToLobby(request);
         } else {
             // Refresh data load
-            setLobbyCode(lobbyState.lobbyCode);
-            setLobbyPlayers(lobbyState.players);
+            setLobbyPlayersCallback(lobbyState.players);
+            setLobbyReadyStatusCallback(lobbyState.readyStatus);
 
             // Listen for lobby state refresh
             SocketService.lobbyRefreshListener(setLobbyState, setClientPlayer);
+            // @TODO: Alan replace this w/ `setErrorState`
+            SocketService.errorListener(console.log);
         }
     }, [lobbyState]);   // RERUNS - when lobby state needs to refresh
 
@@ -113,7 +123,7 @@ function PlayerList(props) {
                 // Show connected player - @TODO: Handle ready state text
                 arr.push(
                     <div key={i}>
-                        <h3 className='player-name'>{playerName + '        ' + readyText}</h3>
+                        <h3 className='player-name'>{playerName + ' ' + readyText}</h3>
                     </div>
                 );
             } else {

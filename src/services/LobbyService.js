@@ -87,8 +87,6 @@ export class LobbyService {
         // GET request to check if lobby is valid
         const response = await fetch(callpoint);
 
-        console.log('hello');
-
         return await response.json();
     }
 }

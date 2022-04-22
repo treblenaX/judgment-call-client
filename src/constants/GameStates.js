@@ -1,0 +1,10 @@
+export const GameStates = {
+    INIT: 'INIT',
+    LOBBY: 'LOBBY',
+    DEAL: 'DEAL',
+    REVIEW: 'REVIEW',
+    DISCUSS: 'DISCUSS',
+    MITIGATION: 'MITIGATION',
+    JUDGMENT_CALL: 'JUDGMENT CALL',
+    OUTPUT: 'OUTPUT'
+}

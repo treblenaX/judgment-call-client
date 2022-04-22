@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { SERVER_ENDPOINT } from '../components/App.js';
-import { ClientSocketStates } from './socket-states/ClientSocketStates';
-import { ServerSocketStates } from './socket-states/ServerSocketStates';
+import { ClientSocketStates } from '../constants/ClientSocketStates'
+import { ServerSocketStates } from '../constants/ServerSocketStates';
 
 const SOCKET_TIMEOUT = 5000;
 
@@ -42,6 +42,9 @@ export class SocketService {
 
                 // On connection - verify that it's connected.
                 socket.on(BASE_CONNECT, () => {
+                    
+                    // @TODO: take out if not debug
+                    SocketService.debug();
                     resolve(true);
                 });
             }
@@ -69,16 +72,18 @@ export class SocketService {
         });
     }
 
-    static startGameListener() {
+    static startGameListener(timerStart) {
         socket.on(ServerSocketStates.ALL_PLAYERS_READY, (response) => {
+            console.log('ALL PLAYERS READY');
             // Start game counter
-
+            timerStart();
         });
     }
 
-    static stopCountDownListener() {
+    static stopCountDownListener(timerReset) {
         socket.on(ServerSocketStates.STOP_COUNTDOWN, (response) => {
-            // Stop game counter
+            // Stop and reset game counter
+            timerReset();
         });
     }
 
@@ -86,5 +91,13 @@ export class SocketService {
         socket.on(ServerSocketStates.ERROR, (error) => {
             setErrorState(error);
         });
+    }
+
+    static debug() {
+        if (socket) {
+            socket.onAny((event) => {
+                console.log(event);
+            })
+        }
     }
 }
