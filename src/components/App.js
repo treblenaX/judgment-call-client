@@ -3,6 +3,7 @@ import Footer from './Footer';
 import DebugMenu from './DebugMenu';
 import Home from './Home';
 import Lobby from './Lobby';
+import TextAreaModule from './TextAreaModule';
 import React, { useState } from 'react';
 
 const DEBUG = true;
@@ -39,6 +40,8 @@ function App() {
                   isClientHost={isClientHost}
                   joinLobbyCode={joinLobbyCode}
                 />;
+      case 'textarea':
+        return <TextAreaModule />;
       default:
         return <>404: No such page {pageId}</>;
     }

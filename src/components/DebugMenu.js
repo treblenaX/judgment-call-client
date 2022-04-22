@@ -1,30 +1,26 @@
 import '../styles/DebugMenu.scss'
 
+const PAGE_IDS = ['home', 'lobby', 'textarea'];
+
 function DebugMenu(props) {
     const onHideDebug = () => {
         props.setDebugCallback(false);
     }
 
     const onClick = (event) => {
-        // home button
-        if (event.target.id === 'home') {
-            console.log('Debug set page to Home');
-            props.setPageCallback('home');
-        }
-        // lobby button
-        if (event.target.id === 'lobby') {
-            console.log('Debug set page to Lobby');
-            props.setPageCallback('lobby');
-        }
+        const page = event.target.id;
+        console.log('Debug set page to' + page);
+        props.setPageCallback(page);
     }
+
+    const buttons = PAGE_IDS.map((pageId) => {
+        return <li key={pageId}><button id={pageId} onClick={onClick}>{pageId}</button></li>
+    });
 
     return (
         <div className='debug-panel'>
             <h1>Debug Panel</h1>
-            <ul>
-                <li><button id='home' onClick={onClick}>Home</button></li>
-                <li><button id='lobby' onClick={onClick}>Lobby</button></li>
-            </ul>
+            <ul>{buttons}</ul>
             <button onClick={onHideDebug}>Hide Debug Panel</button>
         </div>
     )
