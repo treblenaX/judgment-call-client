@@ -2,6 +2,7 @@ import '../styles/Lobby.scss';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import PageContainer from './PageContainer';
 import { useEffect, useState } from 'react';
 import { LobbyService } from '../services/LobbyService.js';
 import { SocketService } from '../services/SocketService.js';
@@ -70,22 +71,20 @@ function Lobby(props) {
     };
 
     return (
-        <div className='page-container'>
-            <main>
-                <Stack direction='column' spacing={2}>
-                    <h1 id='title'>LOBBY <span id='code'>#{lobbyCode}</span></h1>
-                    <Divider/>
-                    <PlayerList lobbyPlayers={lobbyPlayers}/>
-                    <Divider/>
-                    <Button 
-                        variant="contained"
-                        color="secondary"
-                        onClick={onClickReady}>
-                        Ready
-                    </Button>
-                </Stack>
-            </main>
-        </div>
+        <PageContainer>
+            <Stack direction='column' spacing={2}>
+                <h1 id='title'>LOBBY <span id='code'>#{lobbyCode}</span></h1>
+                <Divider/>
+                <PlayerList lobbyPlayers={lobbyPlayers}/>
+                <Divider/>
+                <Button 
+                    variant="contained"
+                    color="secondary"
+                    onClick={onClickReady}>
+                    Ready
+                </Button>
+            </Stack>
+        </PageContainer>
     );
 }
 

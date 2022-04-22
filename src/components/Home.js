@@ -2,6 +2,7 @@ import '../styles/Home.scss';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import PageContainer from './PageContainer';
 import { LobbyService } from '../services/LobbyService.js';
 
 function Home(props) {
@@ -67,42 +68,40 @@ function Home(props) {
     };
 
     return (
-        <div className='page-container'>
-            <main>
-                <Stack direction='column' spacing={2}>
-                    <h1 id='title'>JUDGMENT CALL</h1>
-                    <TextField 
-                        required
-                        fullWidth
-                        className='text-field'
-                        id="input-name" 
-                        label="Name" 
-                        variant="outlined" 
-                        margin="normal" />
-                    <TextField 
-                        fullWidth
-                        className='text-field'
-                        id="input-code" 
-                        label="Room Code (Optional)" 
-                        variant="outlined" 
-                        margin="normal" />
-                    <Stack spacing={2} direction='row' justifyContent='center'>
-                        <Button 
-                            variant="contained"
-                            color="secondary"
-                            onClick={onClickCreate}>
-                            Create Lobby
-                        </Button>
-                        <Button 
-                            variant="outlined"
-                            color="secondary"
-                            onClick={onClickJoin}>
-                            Join Lobby
-                        </Button>
-                    </Stack>
+        <PageContainer>
+            <Stack direction='column' spacing={2}>
+                <h1 id='title'>JUDGMENT CALL</h1>
+                <TextField 
+                    required
+                    fullWidth
+                    className='text-field'
+                    id="input-name" 
+                    label="Name" 
+                    variant="outlined" 
+                    margin="normal" />
+                <TextField 
+                    fullWidth
+                    className='text-field'
+                    id="input-code" 
+                    label="Room Code (Optional)" 
+                    variant="outlined" 
+                    margin="normal" />
+                <Stack spacing={2} direction='row' justifyContent='center'>
+                    <Button 
+                        variant="contained"
+                        color="secondary"
+                        onClick={onClickCreate}>
+                        Create Lobby
+                    </Button>
+                    <Button 
+                        variant="outlined"
+                        color="secondary"
+                        onClick={onClickJoin}>
+                        Join Lobby
+                    </Button>
                 </Stack>
-            </main>
-        </div>
+            </Stack>
+        </PageContainer>
     )
 }
 

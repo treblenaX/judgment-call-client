@@ -4,7 +4,9 @@ import DebugMenu from './DebugMenu';
 import Home from './Home';
 import Lobby from './Lobby';
 import TextAreaModule from './TextAreaModule';
-import React, { useState } from 'react';
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect } from 'react';
 
 const DEBUG = true;
 
@@ -47,9 +49,17 @@ function App() {
     }
   };
 
+  // useEffect
+  useEffect(() => {
+    if (errorState) {
+      toast.error(errorState);
+    }
+  }, [errorState]);
+
   return (
     <>
       {showDebug ? <DebugMenu setDebugCallback={setShowDebug} setPageCallback={setPage} /> : null}
+      <ToastContainer />
       { getPage() }
       <Footer />
     </>
