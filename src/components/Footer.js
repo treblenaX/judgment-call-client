@@ -52,7 +52,7 @@ function LobbyFooter(props) {
     // @TODO: alan plz beautify this
     return (
         <div>
-            {`${convertSecondsToTime(time)} : ${lobbyReadyStatus}/${lobbyPlayers.length}`}
+            {`${convertSecondsToTime(time)} : ${lobbyReadyStatus.count}/${lobbyPlayers.length}`}
         </div>
     );
 }

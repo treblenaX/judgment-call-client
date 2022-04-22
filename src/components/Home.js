@@ -2,6 +2,7 @@ import '../styles/Home.scss';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import PageContainer from './PageContainer';
 import { LobbyService } from '../services/LobbyService.js';
 
 function Home(props) {
@@ -10,7 +11,7 @@ function Home(props) {
     const setClientHostCallback = props.setClientHostCallback;
     const setJoinLobbyCodeCallback = props.setJoinLobbyCodeCallback;
 
-    let initLoad = true;    // To prevent multiple calls
+    let initLoad = true;    // To prevent multiple calls @TODO handle better
 
     // TODO: Handle join click
     const onClickJoin = async (e) => {
@@ -32,7 +33,8 @@ function Home(props) {
                 setPlayerNameCallback(name);
                 setJoinLobbyCodeCallback(request.lobbyCode);
                 setClientHostCallback(false);
-                setPageCallback('lobby');
+                // Send user to loading page
+                setPageCallback('loading');
             } else {
                 throw new Error('Lobby is not valid.');
             }
@@ -55,11 +57,13 @@ function Home(props) {
                 if (isAlive) {
                     setPlayerNameCallback(name);
                     setClientHostCallback(true);
-                    setPageCallback('lobby');
+                    // Send user to loading page
+                    setPageCallback('loading');
                 } else {
                     throw new Error('Server connection error.');
                 }
             } catch (error) {
+                initLoad = true;
                 // @TODO: error handling
                 console.log(error);
             }
@@ -67,42 +71,40 @@ function Home(props) {
     };
 
     return (
-        <div className='page-container'>
-            <main>
-                <Stack direction='column' spacing={2}>
-                    <h1 id='title'>JUDGMENT CALL</h1>
-                    <TextField 
-                        required
-                        fullWidth
-                        className='text-field'
-                        id="input-name" 
-                        label="Name" 
-                        variant="outlined" 
-                        margin="normal" />
-                    <TextField 
-                        fullWidth
-                        className='text-field'
-                        id="input-code" 
-                        label="Room Code (Optional)" 
-                        variant="outlined" 
-                        margin="normal" />
-                    <Stack spacing={2} direction='row' justifyContent='center'>
-                        <Button 
-                            variant="contained"
-                            color="secondary"
-                            onClick={onClickCreate}>
-                            Create Lobby
-                        </Button>
-                        <Button 
-                            variant="outlined"
-                            color="secondary"
-                            onClick={onClickJoin}>
-                            Join Lobby
-                        </Button>
-                    </Stack>
+        <PageContainer>
+            <Stack direction='column' spacing={2}>
+                <h1 id='title'>JUDGMENT CALL</h1>
+                <TextField 
+                    required
+                    fullWidth
+                    className='text-field'
+                    id="input-name" 
+                    label="Name" 
+                    variant="outlined" 
+                    margin="normal" />
+                <TextField 
+                    fullWidth
+                    className='text-field'
+                    id="input-code" 
+                    label="Room Code (Optional)" 
+                    variant="outlined" 
+                    margin="normal" />
+                <Stack spacing={2} direction='row' justifyContent='center'>
+                    <Button 
+                        variant="contained"
+                        color="secondary"
+                        onClick={onClickCreate}>
+                        Create Lobby
+                    </Button>
+                    <Button 
+                        variant="outlined"
+                        color="secondary"
+                        onClick={onClickJoin}>
+                        Join Lobby
+                    </Button>
                 </Stack>
-            </main>
-        </div>
+            </Stack>
+        </PageContainer>
     )
 }
 

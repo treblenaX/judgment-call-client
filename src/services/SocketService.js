@@ -59,13 +59,19 @@ export class SocketService {
     static isSocketAlive = () => { return socket != null && socket.connected }
 
     /** Listeners */
-    static lobbyRefreshListener(setLobbyState, setClientPlayer) {
+    static lobbyRefreshListener(lobbyStateCallbacks, setClientPlayer) {
         socket.on(ServerSocketStates.UPDATE_LOBBY_INFORMATION, (response) => {
+            const serverMessage = response.message;
             const lobby = response.lobby;
             const players = lobby.players;
+            const readyStatus = lobby.readyStatus;
+            const gameState = lobby.gameMaster.state;
+
+            lobbyStateCallbacks.setLobbyPlayers(players);
+            lobbyStateCallbacks.setGameState(gameState);
+            lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
 
             // @TODO: error handling
-            setLobbyState(lobby);
 
             // refresh client player
             setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));

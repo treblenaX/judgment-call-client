@@ -1,20 +1,5 @@
 $color-gold: #A6924D;
 
-.page-container {
-    grid-row-start: 1;
-    grid-row-end: -1;
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-}
-
-main {
-    grid-column-start: 2;
-    grid-column-end: 2;
-    width: 100%;
-    align-self: center;
-    justify-self: center;
-}
-
 #title {
     text-align: center;
     font-family: 'Roboto Slab', sans-serif;

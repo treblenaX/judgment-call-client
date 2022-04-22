@@ -1,5 +1,6 @@
 export const GameStates = {
     INIT: 'INIT',
+    LOADING: 'LOADING',
     LOBBY: 'LOBBY',
     DEAL: 'DEAL',
     REVIEW: 'REVIEW',
