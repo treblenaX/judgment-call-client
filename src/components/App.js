@@ -10,6 +10,7 @@ import Scenario from './Scenario';
 import Discussion from './Discussion';
 import Loading from './Loading';
 import Mitigation from './Mitigation';
+import Summary from './Summary';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
@@ -23,7 +24,8 @@ const PAGE_IDS = [
   'scenario', 
   'discussion', 
   'loading', 
-  'mitigation'
+  'mitigation',
+  'summary'
 ];
 
 // @TODO handle this better
@@ -109,6 +111,8 @@ function App() {
         return <Discussion />;
       case 'mitigation':
         return <Mitigation />;
+      case 'summary':
+        return <Summary />;
       default:
         return <>404: No such page {pageId}</>;
     }
@@ -124,13 +128,13 @@ function App() {
   return (
     <>
       {showDebug ? <DebugMenu setDebugCallback={setShowDebug} setPageCallback={setPage} ids={PAGE_IDS}/> : null}
-      <ToastContainer />
       { getPage() }
       <Footer 
         lobbyPlayers={lobbyPlayers}
         lobbyReadyStatus={lobbyReadyStatus}
         gameState={gameState}
       />
+      <ToastContainer />
     </>
   );
 }
