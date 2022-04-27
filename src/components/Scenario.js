@@ -14,7 +14,20 @@ function Scenario(props) {
     const situation = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'; 
 
     // TODO: Get cards from server
-    const cards = [0, 1, 2];
+    const cards = [
+        {
+            name: 'Card 1',
+            description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'
+        },
+        {
+            name: 'Card 2',
+            description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'
+        },
+        {
+            name: 'Card 3',
+            description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'
+        },
+    ];
 
     return (
         <PageContainer>
@@ -29,20 +42,25 @@ function Scenario(props) {
 }
 
 function CardContainer(props) {
-    const cards = props.cards;
+    console.log(props.cards);
+
     return (
         <Stack spacing={2} direction='row'>
-            {cards.map((card) => {
-                return <Card key={card} />
+            {props.cards.map((card, i) => {
+                return <Card key={i} name={card.name} description={card.description} />
             })}
         </Stack>
     );
 }
 
 // TODO: Render card properly
-function Card(key) {
+function Card(props) {
     return (
-        <div className='card' key={key} />
+        <div className='card' key={props.key}>
+            <h3>{props.name}</h3>
+            <p>{props.description}</p>
+        </div>
+
     )
 }
 
