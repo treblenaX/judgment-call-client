@@ -11,7 +11,7 @@ function Scenario(props) {
     }
 
     // TODO: Get situation from server
-    const situation = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'; 
+    const instructions = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'; 
 
     // TODO: Get cards from server
     const cards = [
@@ -27,13 +27,17 @@ function Scenario(props) {
             name: 'Card 3',
             description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'
         },
+        {
+            name: 'Card 4',
+            description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'
+        },
     ];
 
     return (
         <PageContainer>
             <Stack spacing={2} direction='column'>
-                <Header title='SCENARIO' />
-                <div class='situation-text'>{situation}</div>
+                <Header title='REVIEW' />
+                <div class='instruction-text'>{instructions}</div>
                 <CardContainer cards={cards} />
                 <TextAreaModule submitCallback={submitCallback} />
             </Stack>
