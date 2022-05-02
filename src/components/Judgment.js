@@ -14,7 +14,7 @@ function Judgment(props) {
             <Stack spacing={2} direction='column'>
                 <Header title='JUDGEMENT' />
                 <h3>What would you do?</h3>
-                <TextAreaModule submitCallback={submitCallback} label='Write your review...' />
+                <TextAreaModule submitCallback={submitCallback} label='Write your judgment call...' />
             </Stack>
         </PageContainer>
     )

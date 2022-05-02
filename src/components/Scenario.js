@@ -39,7 +39,7 @@ function Scenario(props) {
                 <Header title='REVIEW' />
                 <div class='instruction-text'>{instructions}</div>
                 <CardContainer cards={cards} />
-                <TextAreaModule submitCallback={submitCallback} />
+                <TextAreaModule label='Write your review...' submitCallback={submitCallback} />
             </Stack>
         </PageContainer>
     );
