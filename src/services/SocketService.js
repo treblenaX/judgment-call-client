@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 import { SERVER_ENDPOINT } from '../components/App.js';
 import { ClientSocketStates } from '../constants/ClientSocketStates'
+import { GameStates } from '../constants/GameStates.js';
 import { ServerSocketStates } from '../constants/ServerSocketStates';
 
 const SOCKET_TIMEOUT = 5000;
@@ -51,6 +52,11 @@ export class SocketService {
         });
     }
 
+    /** Review Functions */
+    static sendReview(request) {
+        socket.volatile.emit(ClientSocketStates.SEND_REVIEW, request);
+    }
+
     /** Ready Functions */
     static togglePlayerReady(request) {
         socket.volatile.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
@@ -59,10 +65,9 @@ export class SocketService {
     static isSocketAlive = () => { return socket != null && socket.connected }
 
     /** Listeners */
-    static lobbyRefreshListener(lobbyStateCallbacks, setClientPlayer) {
+    static lobbyRefreshListener(lobbyStateCallbacks, setClientPlayer, setLoaded) {
         socket.on(ServerSocketStates.UPDATE_LOBBY_INFORMATION, (response) => {
-            console.log(response);
-            const serverMessage = response.message;
+            // const serverMessage = response.message;
             const lobby = response.lobby;
             const players = lobby.players;
             const readyStatus = lobby.readyStatus;
@@ -76,12 +81,43 @@ export class SocketService {
 
             // refresh client player
             setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
+
+            // Set loaded init state if present
+            if (setLoaded) setLoaded(true);
         });
     }
 
+    static errorListener(setErrorState) {
+        socket.on(ServerSocketStates.ERROR, (error) => {
+            setErrorState(error);
+        });
+    }
+
+    static startDealListener(lobbyStateCallbacks, setPageCallback) {
+        socket.on(ServerSocketStates.START_DEAL, (response) => {
+            // Parse the data from the server
+            const lobby = response.lobby;
+            const players = lobby.players;
+            const readyStatus = lobby.readyStatus;
+            const gameState = lobby.gameMaster.state;
+
+            lobbyStateCallbacks.setLobbyPlayers(players);
+            lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+            lobbyStateCallbacks.setGameState(gameState);
+            // Set game master
+            lobbyStateCallbacks.setGameMaster(lobby.gameMaster);
+            // Reset client player and grab the cards
+            lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
+
+            socket.emit(ClientSocketStates.CARDS_DEALT);
+            // Start game and navigate to 'review' page
+            setPageCallback('scenario');
+        });
+    }
+
+    /** @TODO: Move this to Timer after prod */
     static startGameListener(timerStart) {
         socket.on(ServerSocketStates.ALL_PLAYERS_READY, (response) => {
-            console.log('ALL PLAYERS READY');
             // Start game counter
             timerStart();
         });
@@ -91,12 +127,6 @@ export class SocketService {
         socket.on(ServerSocketStates.STOP_COUNTDOWN, (response) => {
             // Stop and reset game counter
             timerReset();
-        });
-    }
-
-    static errorListener(setErrorState) {
-        socket.on(ServerSocketStates.ERROR, (error) => {
-            setErrorState(error);
         });
     }
 

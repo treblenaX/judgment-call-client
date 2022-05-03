@@ -78,8 +78,6 @@ export class LobbyService {
         }
     }
 
-    
-
     static doesLobbyExist = async (request) => {
         // Build the endpoint
         const callpointBase = SERVER_ENDPOINT + API_ENDPOINT + 'isValid';

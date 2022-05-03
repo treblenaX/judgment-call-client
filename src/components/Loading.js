@@ -2,7 +2,7 @@ import '../styles/Loading.scss';
 import PageContainer from './PageContainer';
 import Stack from '@mui/material/Stack';
 import { ThreeDots } from 'react-loading-icons';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LobbyService } from '../services/LobbyService';
 import { GameStates } from '../constants/GameStates';
 import { SocketService } from '../services/SocketService';
@@ -22,10 +22,14 @@ function Loading(props) {
     const setLobbyCodeCallback = props.setLobbyCodeCallback;
     // Set page director
     const setPageCallback = props.setPageCallback;
+    // Set state of the game to redirect the page
+    const setGameStateCallback = props.setGameStateCallback;
+
+    // Loading state
+    const [isLoaded, setLoaded] = useState(false);
 
     // ASYNC HELPERS
     const connectToLobby = async (request) => {
-        console.log(request);
         const lobbyResponse = (isClientHost) 
             ? await LobbyService.createLobby(request) 
             : await LobbyService.joinLobby(request);
@@ -34,22 +38,26 @@ function Loading(props) {
         setLobbyCodeCallback(lobbyResponse.lobby.lobbyCode);
 
         // Listen for lobby state refresh
-        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
+    
+        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback, setLoaded);
         SocketService.errorListener(console.log);
-
-        // Direct user to `lobby`
-        setPageCallback('lobby');
+        // setGameStateCallback(GameStates.LOBBY);
     };
 
     useEffect(() => {
-        // Build request
-        const request = {
-            playerName: playerName,
-            lobbyCode: joinLobbyCode
+        if (!isLoaded) {
+            // Build request
+            const request = {
+                playerName: playerName,
+                lobbyCode: joinLobbyCode
+            }
+    
+            connectToLobby(request);
+        } else {
+            // Direct user to `lobby`
+            setPageCallback('lobby');
         }
-
-        connectToLobby(request);
-    }, []);
+    }, [isLoaded]);
 
     return (
         <PageContainer>

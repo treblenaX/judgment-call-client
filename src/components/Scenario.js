@@ -3,24 +3,44 @@ import PageContainer from './PageContainer';
 import Header from './Header';
 import TextAreaModule from './TextAreaModule';
 import Stack from '@mui/material/Stack';
+import { SocketService } from '../services/SocketService';
+import { useEffect } from 'react';
 
 function Scenario(props) {
+    const clientPlayer = props.clientPlayer;
+    const gameMaster = props.gameMaster;
+
+    const lobbyStateCallbacks = props.lobbyStateCallbacks;
+    const setClientPlayerCallback = props.setClientPlayerCallback;
+
     // TODO: Handle submit callback
     const submitCallback = (data) => {
-        console.log(data);
+        // Build request
+        const request = {
+            lobbyCode: clientPlayer.lobbyCode,
+            pId: clientPlayer.pId,
+            review: data
+        };
+        
+        SocketService.sendReview(request);
+        // Listen for lobby state refresh
+        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
+        // @TODO: fix lobby ready status refresh
     }
 
-    // TODO: Get situation from server
-    const situation = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'; 
+    useEffect(() => {
+        // Send review ready to server
 
-    // TODO: Get cards from server
-    const cards = [0, 1, 2];
+    }, [])
+
+    const situation = gameMaster.scenario.scenario_description; 
+    const cards = clientPlayer.cards;
 
     return (
         <PageContainer>
             <Stack spacing={2} direction='column'>
                 <Header title='SCENARIO' />
-                <div class='situation-text'>{situation}</div>
+                <div className='situation-text'>{situation}</div>
                 <CardContainer cards={cards} />
                 <TextAreaModule submitCallback={submitCallback} />
             </Stack>
@@ -30,19 +50,35 @@ function Scenario(props) {
 
 function CardContainer(props) {
     const cards = props.cards;
+    const stakeholder = cards.stakeholder;
+    const principle = cards.principle;
+    const rating = cards.rating;
+
     return (
         <Stack spacing={2} direction='row'>
-            {cards.map((card) => {
-                return <Card key={card} />
-            })}
+            <Card 
+                key='0' 
+                payload={stakeholder} 
+                />
+            <Card 
+                key='1' 
+                payload={principle} 
+                />
+            <Card 
+                key='2' 
+                payload={rating} 
+                />
         </Stack>
     );
 }
 
-// TODO: Render card properly
-function Card(key) {
+function Card(props) {
+    const payload = props.payload;
+
     return (
-        <div className='card' key={key} />
+        <div style={{color: 'black'}} className='card'>
+            {JSON.stringify(payload)}
+        </div>
     )
 }
 

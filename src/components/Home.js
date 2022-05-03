@@ -4,12 +4,14 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import PageContainer from './PageContainer';
 import { LobbyService } from '../services/LobbyService.js';
+import { GameStates } from '../constants/GameStates';
 
 function Home(props) {
     const setPageCallback = props.setPageCallback;
     const setPlayerNameCallback = props.setPlayerNameCallback;
     const setClientHostCallback = props.setClientHostCallback;
     const setJoinLobbyCodeCallback = props.setJoinLobbyCodeCallback;
+    const setGameStateCallback = props.setGameStateCallback;
 
     let initLoad = true;    // To prevent multiple calls @TODO handle better
 
@@ -35,6 +37,7 @@ function Home(props) {
                 setClientHostCallback(false);
                 // Send user to loading page
                 setPageCallback('loading');
+                setGameStateCallback(GameStates.LOADING);
             } else {
                 throw new Error('Lobby is not valid.');
             }
@@ -59,6 +62,7 @@ function Home(props) {
                     setClientHostCallback(true);
                     // Send user to loading page
                     setPageCallback('loading');
+                    setGameStateCallback(GameStates.LOADING);
                 } else {
                     throw new Error('Server connection error.');
                 }

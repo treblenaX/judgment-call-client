@@ -12,6 +12,7 @@ import Loading from './Loading';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
+import { SocketService } from '../services/SocketService';
 
 const DEBUG = true;
 const PAGE_IDS = ['home', 'lobby', 'textarea', 'judgment', 'scenario', 'discussion', 'loading'];
@@ -28,6 +29,7 @@ function App() {
 
   // States that have passed through multiple components 
   const [gameState, setGameState] = useState(GameStates.INIT);
+  const [gameMaster, setGameMaster] = useState(null);
   const [lobbyPlayers, setLobbyPlayers] = useState(null);
   const [lobbyReadyStatus, setLobbyReadyStatus] = useState(null);
 
@@ -51,10 +53,24 @@ function App() {
   const setLobbyStateCallbacks = {
     setGameState: setGameState,
     setLobbyPlayers: setLobbyPlayers,
-    setLobbyReadyStatus: setLobbyReadyStatus
+    setLobbyReadyStatus: setLobbyReadyStatus,
+    setClientPlayer: setClientPlayer,
+    setGameMaster: setGameMaster
   };
 
   // @TODO: finish doing this ^
+  const convertGameState = (gameState) => {
+    switch (gameState) {
+      case GameStates.INIT:
+        return 'home';
+      case GameStates.LOBBY:
+        return 'lobby';
+      case GameStates.LOADING:
+        return 'loading';
+      case GameStates.DEAL:
+        return 'scenario';
+    }
+  }
 
   // find which page to display
   const getPage = () => {
@@ -65,6 +81,8 @@ function App() {
                   setPageCallback={setPage} 
                   setClientHostCallback={setClientHost}
                   setJoinLobbyCodeCallback={setJoinLobbyCode}
+                  setGameStateCallback={setGameState}
+                  setErrorStateCallback={setErrorState}
                 />;
       case 'loading':
         return <Loading 
@@ -75,6 +93,8 @@ function App() {
                   setClientHostCallback={setClientHost}
                   setLobbyCodeCallback={setLobbyCode}
                   setPageCallback={setPage}
+                  setGameStateCallback={setGameState}
+                  setErrorStateCallback={setErrorState}
               />;
       case 'lobby':
         return <Lobby 
@@ -88,13 +108,19 @@ function App() {
                   lobbyStateCallbacks={setLobbyStateCallbacks}
                   setClientPlayerCallback={setClientPlayer}
                   setPageCallback={setPage}
+                  setErrorStateCallback={setErrorState}
                 />;
       case 'textarea':
         return <TextAreaModule />;
       case 'judgment':
         return <Judgment />;
       case 'scenario':
-        return <Scenario />;
+        return <Scenario 
+                  clientPlayer={clientPlayer}
+                  gameMaster={gameMaster}
+                  lobbyStateCallbacks={setLobbyStateCallbacks}
+                  setClientPlayerCallback={setClientPlayer}
+                />;
       case 'discussion':
         return <Discussion />;
       default:
@@ -102,8 +128,39 @@ function App() {
     }
   };
 
+  /** Footer Handler */
+  const footerTimeOut = (gameState) => {
+    switch (gameState) {
+      case GameStates.LOBBY:
+        return () => {
+
+        };
+      case GameStates.REVIEW:
+        return () => {
+
+        };
+      case GameStates.DISCUSS:
+        return () => {
+
+        };
+      case GameStates.MITIGATION:
+        return () => {
+
+        };
+      case GameStates.JUDGMENT_CALL:
+        return () => {
+
+        };
+      case GameStates.OUTPUT:
+        return () => {
+
+        };
+    }
+  }
+
   // useEffect
   useEffect(() => {
+    SocketService.debug();
     if (errorState) {
       toast.error(errorState);
     }
@@ -115,6 +172,7 @@ function App() {
       <ToastContainer />
       { getPage() }
       <Footer 
+        footerTimeOutCallback={footerTimeOut}
         lobbyPlayers={lobbyPlayers}
         lobbyReadyStatus={lobbyReadyStatus}
         gameState={gameState}

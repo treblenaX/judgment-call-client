@@ -15,20 +15,20 @@ function Lobby(props) {
     const clientPlayer = props.clientPlayer;
     const lobbyCode = props.lobbyCode;
 
+    const setPageCallback = props.setPageCallback;
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setClientPlayerCallback = props.setClientPlayerCallback;
-
-    let initLoad = true;
+    const setGameStateCallback = lobbyStateCallbacks.setGameState;
 
     useEffect(() => {
-        // Refresh data load
-        // setLobbyPlayersCallback(lobbyState.players);
-        // setLobbyReadyStatusCallback(lobbyState.readyStatus);
-
+        // Set Game state to LOBBY on lobby page
+        setGameStateCallback(GameStates.LOBBY);
         // Listen for lobby state refresh
         SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
         // @TODO: Alan replace this w/ `setErrorState`
         SocketService.errorListener(console.log);
+        // Listen for the game start
+        SocketService.startDealListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
     }, [lobbyState]);   // RERUNS - when lobby state needs to refresh
 
     // TODO: Handle ready up click
