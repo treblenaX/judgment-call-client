@@ -130,6 +130,7 @@ function App() {
         return <Scenario 
                   clientPlayer={clientPlayer}
                   gameMaster={gameMaster}
+                  gameState={gameState}
                   lobbyStateCallbacks={setLobbyStateCallbacks}
                   setClientPlayerCallback={setClientPlayer}
                 />;

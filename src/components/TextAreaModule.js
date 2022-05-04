@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 function TextAreaModule(props) {
   const label = props.label ? props.label : 'Response';
   const placeholder = props.placeholder;
+  const readyState = props.readyState;
   const submitCallback = props.submitCallback ? props.submitCallback : () => {};
 
   // a random id to assign this textarea to
@@ -28,12 +29,21 @@ function TextAreaModule(props) {
         //   value={value}
         //   onChange={handleChange}
       />
-      <Button 
-          variant="contained"
-          color="secondary"
-          onClick={onSubmitClicked}>
-          Submit
-      </Button>
+      {
+        (!readyState) 
+        ? <Button 
+            variant="contained"
+            color="secondary"
+            onClick={onSubmitClicked}>
+            Submit
+          </Button>
+        : <Button 
+            variant="primary"
+            color="secondary"
+            onClick={onSubmitClicked}>
+            Cancel
+          </Button>
+      }
     </Stack>
   )
 }

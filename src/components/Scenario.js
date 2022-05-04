@@ -10,6 +10,7 @@ import { GameInstructions } from '../constants/GameInstructions';
 function Scenario(props) {
     const clientPlayer = props.clientPlayer;
     const gameMaster = props.gameMaster;
+    const gameState = props.gameState;
 
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setClientPlayerCallback = props.setClientPlayerCallback;
@@ -20,13 +21,13 @@ function Scenario(props) {
         const request = {
             lobbyCode: clientPlayer.lobbyCode,
             pId: clientPlayer.pId,
-            review: data
+            review: data,
+            readyState: !clientPlayer.readyState    // Player ready up
         };
         
         SocketService.sendReview(request);
         // Listen for lobby state refresh
         SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
-        // @TODO: fix lobby ready status refresh
     }
 
     useEffect(() => {
@@ -44,7 +45,7 @@ function Scenario(props) {
                 <Header title='REVIEW' />
                 <div class='instruction-text'>{instructions}</div>
                 <CardContainer cards={cards} />
-                <TextAreaModule label='Write your review...' submitCallback={submitCallback} />
+                <TextAreaModule readyState={clientPlayer.readyState} label='Write your review...' submitCallback={submitCallback} />
             </Stack>
         </PageContainer>
     );
@@ -61,22 +62,22 @@ function CardContainer(props) {
         <Stack spacing={2} direction='row'>
             <Card 
                 type='Stakeholder'
-                key='0' 
+                id='0' 
                 payload={stakeholder} 
                 />
             <Card 
                 type='Principle'
-                key='1' 
+                id='1' 
                 payload={principle} 
                 />
             <Card 
                 type='Rating'
-                key='2' 
+                id='2' 
                 payload={rating} 
                 />
             <Card
                 type='Scenario'
-                key='3'
+                id='3'
                 payload={scenario}
                 />
         </Stack>
@@ -85,13 +86,12 @@ function CardContainer(props) {
 
 // TODO: Render card properly
 function Card(props) {
-    const key = props.key;
     const type = props.type;
     const name = props.payload.name;
     const description = props.payload.description;
 
     return (
-        <div className='card' key={key}>
+        <div className='card' key={props.id}>
             <h1 className="card-type-text">{type}</h1>
             <h3>{name}</h3>
             <p>{description ? description : ''}</p>
