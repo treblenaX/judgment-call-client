@@ -4,9 +4,17 @@
     height: 300px;
     background-color: white;
     border-radius: 5px;
+    color: black;
+    text-align: center;
+    padding: 16px;
 }
 
-.situation-text {
+.instruction-text {
     font-family: 'Roboto Slab', serif;
     text-align: center;
+}
+
+.card-type-text {
+    color: gray;
+    padding-bottom: 10px;
 }

@@ -22,7 +22,7 @@ function Footer(props) {
             case GameStates.REVIEW:
                 return (
                     <div>
-                        <ReviewTimer /> : <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
+                        <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
                     </div>
                 );
             default:

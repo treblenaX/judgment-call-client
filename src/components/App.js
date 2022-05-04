@@ -9,13 +9,25 @@ import Judgment from './Judgment';
 import Scenario from './Scenario';
 import Discussion from './Discussion';
 import Loading from './Loading';
+import Mitigation from './Mitigation';
+import Summary from './Summary';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import { SocketService } from '../services/SocketService';
 
 const DEBUG = true;
-const PAGE_IDS = ['home', 'lobby', 'textarea', 'judgment', 'scenario', 'discussion', 'loading'];
+const PAGE_IDS = [
+  'home', 
+  'lobby', 
+  'textarea', 
+  'judgment', 
+  'scenario', 
+  'discussion', 
+  'loading', 
+  'mitigation',
+  'summary'
+];
 
 // @TODO handle this better
 export const SERVER_ENDPOINT = (DEBUG) ? 'http://localhost:3000' : 'https://judgment-call.herokuapp.com';
@@ -123,6 +135,10 @@ function App() {
                 />;
       case 'discussion':
         return <Discussion />;
+      case 'mitigation':
+        return <Mitigation />;
+      case 'summary':
+        return <Summary />;
       default:
         return <>404: No such page {pageId}</>;
     }
@@ -169,7 +185,6 @@ function App() {
   return (
     <>
       {showDebug ? <DebugMenu setDebugCallback={setShowDebug} setPageCallback={setPage} ids={PAGE_IDS}/> : null}
-      <ToastContainer />
       { getPage() }
       <Footer 
         footerTimeOutCallback={footerTimeOut}
@@ -177,6 +192,7 @@ function App() {
         lobbyReadyStatus={lobbyReadyStatus}
         gameState={gameState}
       />
+      <ToastContainer />
     </>
   );
 }

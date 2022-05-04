@@ -1,0 +1,12 @@
+.summary-wrapper {
+    grid-row-start: 1;
+    grid-row-end: -1;
+    display: grid;
+    grid-template-columns: 1fr 8fr 1fr;
+}
+
+.summary-body {
+    grid-column-start: 2;
+    grid-column-end: -2;
+    align-self: center;
+}

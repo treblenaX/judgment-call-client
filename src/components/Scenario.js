@@ -5,6 +5,7 @@ import TextAreaModule from './TextAreaModule';
 import Stack from '@mui/material/Stack';
 import { SocketService } from '../services/SocketService';
 import { useEffect } from 'react';
+import { GameInstructions } from '../constants/GameInstructions';
 
 function Scenario(props) {
     const clientPlayer = props.clientPlayer;
@@ -35,14 +36,15 @@ function Scenario(props) {
 
     const situation = gameMaster.scenario.scenario_description; 
     const cards = clientPlayer.cards;
+    const instructions = GameInstructions.REVIEW;
 
     return (
         <PageContainer>
             <Stack spacing={2} direction='column'>
-                <Header title='SCENARIO' />
-                <div className='situation-text'>{situation}</div>
+                <Header title='REVIEW' />
+                <div class='instruction-text'>{instructions}</div>
                 <CardContainer cards={cards} />
-                <TextAreaModule submitCallback={submitCallback} />
+                <TextAreaModule label='Write your review...' submitCallback={submitCallback} />
             </Stack>
         </PageContainer>
     );
@@ -53,32 +55,48 @@ function CardContainer(props) {
     const stakeholder = cards.stakeholder;
     const principle = cards.principle;
     const rating = cards.rating;
+    const scenario = cards.scenario;
 
     return (
         <Stack spacing={2} direction='row'>
             <Card 
+                type='Stakeholder'
                 key='0' 
                 payload={stakeholder} 
                 />
             <Card 
+                type='Principle'
                 key='1' 
                 payload={principle} 
                 />
             <Card 
+                type='Rating'
                 key='2' 
                 payload={rating} 
+                />
+            <Card
+                type='Scenario'
+                key='3'
+                payload={scenario}
                 />
         </Stack>
     );
 }
 
+// TODO: Render card properly
 function Card(props) {
-    const payload = props.payload;
+    const key = props.key;
+    const type = props.type;
+    const name = props.payload.name;
+    const description = props.payload.description;
 
     return (
-        <div style={{color: 'black'}} className='card'>
-            {JSON.stringify(payload)}
+        <div className='card' key={key}>
+            <h1 className="card-type-text">{type}</h1>
+            <h3>{name}</h3>
+            <p>{description ? description : ''}</p>
         </div>
+
     )
 }
 
