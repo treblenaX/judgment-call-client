@@ -14,6 +14,7 @@ function Scenario(props) {
 
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setClientPlayerCallback = props.setClientPlayerCallback;
+    const setPageCallback = props.setPageCallback;
 
     // TODO: Handle submit callback
     const submitCallback = (data) => {
@@ -28,6 +29,7 @@ function Scenario(props) {
         SocketService.sendReview(request);
         // Listen for lobby state refresh
         SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
+        SocketService.startDiscussionListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
     }
 
     useEffect(() => {
@@ -43,7 +45,7 @@ function Scenario(props) {
         <PageContainer>
             <Stack spacing={2} direction='column'>
                 <Header title='REVIEW' />
-                <div class='instruction-text'>{instructions}</div>
+                <div className='instruction-text'>{instructions}</div>
                 <CardContainer cards={cards} />
                 <TextAreaModule readyState={clientPlayer.readyState} label='Write your review...' submitCallback={submitCallback} />
             </Stack>

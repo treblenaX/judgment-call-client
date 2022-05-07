@@ -57,12 +57,20 @@ export class SocketService {
         socket.volatile.emit(ClientSocketStates.SEND_REVIEW, request);
     }
 
+    /** Discussion Functions */
+    static updateDiscussionData(request) {
+        socket.volatile.emit(ClientSocketStates.UPDATE_DISCUSSION, request);
+    }
+    static toggleDiscussionReady(request) {
+        socket.volatile.emit(ClientSocketStates.DISCUSSION_READY, request);
+    }
+
     /** Ready Functions */
     static togglePlayerReady(request) {
         socket.volatile.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
     }
 
-    static isSocketAlive = () => { return socket != null && socket.connected }
+    static isSocketAlive = () => socket != null && socket.connected;
 
     /** Listeners */
     static lobbyRefreshListener(lobbyStateCallbacks, setClientPlayer, setLoaded) {
@@ -72,15 +80,20 @@ export class SocketService {
             const players = lobby.players;
             const readyStatus = lobby.readyStatus;
             const gameState = lobby.gameMaster.state;
+            const gameMaster = lobby.gameMaster;
+            const focusPlayer = gameMaster.focusPlayer;
 
             lobbyStateCallbacks.setLobbyPlayers(players);
             lobbyStateCallbacks.setGameState(gameState);
+            lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+            lobbyStateCallbacks.setGameMaster(gameMaster);
+
             lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
 
             // @TODO: error handling
 
             // refresh client player
-            setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
+            if (setClientPlayer) setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
 
             // Set loaded init state if present
             if (setLoaded) setLoaded(true);
@@ -113,6 +126,65 @@ export class SocketService {
             // Start game and navigate to 'review' page
             setPageCallback('scenario');
         });
+    }
+
+    static startDiscussionListener(lobbyStateCallbacks, setPageCallback) {
+        socket.on(ServerSocketStates.DIRECT_TO_DISCUSSION, (response) => {
+            // const serverMessage = response.message;
+            const lobby = response.lobby;
+            const players = lobby.players;
+            const gameMaster = lobby.gameMaster;
+            const readyStatus = lobby.readyStatus;
+            const focusPlayer = gameMaster.focusPlayer;
+
+            lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+            lobbyStateCallbacks.setGameMaster(gameMaster);
+            lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+            // Reset client player 
+            lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
+
+            setPageCallback('discussion');
+        });
+    }
+
+    static startMitigationListener(lobbyStateCallbacks, setPageCallback) {
+        socket.on(ServerSocketStates.START_MITIGATION, (response) => {
+            // const serverMessage = response.message;
+            const lobby = response.lobby;
+            const players = lobby.players;
+            const gameMaster = lobby.gameMaster;
+            const readyStatus = lobby.readyStatus;
+            const focusPlayer = gameMaster.focusPlayer;
+
+            lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+            lobbyStateCallbacks.setGameMaster(gameMaster);
+            lobbyStateCallbacks.setLobbyPlayers(players);
+            console.log(players);
+            lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+            // Reset client player 
+            lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
+
+            setPageCallback('mitigation');
+        });
+    }
+
+    static startJudgmentCallListener(lobbyStateCallbacks, setPageCallback) {
+        // socket.on(ServerSocketStates.START_MITIGATION, (response) => {
+        //     // const serverMessage = response.message;
+        //     const lobby = response.lobby;
+        //     const players = lobby.players;
+        //     const gameMaster = lobby.gameMaster;
+        //     const readyStatus = lobby.readyStatus;
+        //     const focusPlayer = gameMaster.focusPlayer;
+
+        //     lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+        //     lobbyStateCallbacks.setGameMaster(gameMaster);
+        //     lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+        //     // Reset client player 
+        //     lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
+
+        //     setPageCallback('mitigation');
+        // });
     }
 
     /** @TODO: Move this to Timer after prod */

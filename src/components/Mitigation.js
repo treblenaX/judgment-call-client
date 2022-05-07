@@ -5,35 +5,51 @@ import TextAreaModule from './TextAreaModule';
 import Stack from '@mui/material/Stack';
 
 function Mitigation(props) {
+    const lobbyPlayers = props.lobbyPlayers;
+    const lobbyStateCallbacks = props.lobbyStateCallbacks;
+    const setPageCallback = props.setPageCallback;
+
     // TODO: Replace with real props
-    props = {
-        data: [
-            {
-                'name': 'stakeholder1',
-                'benefit': ['benefit1', 'benefit2', 'benefit3'],
-                'harm': ['harm1', 'harm2', 'harm3'],
-                'principle': ['principle1', 'principle2', 'principle3'],
-            },
-            {
-                'name': 'stakeholder2',
-                'benefit': ['benefit1', 'benefit2', 'benefit3'],
-                'harm': ['harm1', 'harm2', 'harm3'],
-                'principle': ['principle1', 'principle2', 'principle3'],
-            },
-            {
-                'name': 'stakeholder3',
-                'benefit': ['benefit1', 'benefit2', 'benefit3'],
-                'harm': ['harm1', 'harm2', 'harm3'],
-                'principle': ['principle1', 'principle2', 'principle3'],
-            },
-            {
-                'name': 'stakeholder4',
-                'benefit': ['benefit1', 'benefit2', 'benefit3'],
-                'harm': ['harm1', 'harm2', 'harm3'],
-                'principle': ['principle1', 'principle2', 'principle3'],
-            },
-        ]
-    }
+    props.data = lobbyPlayers.map(player => {
+        const cards = player.cards;
+        const discussionData = player.data.discussion;
+
+        return {
+            'name': cards.stakeholder,
+            'benefit': discussionData.benefits,
+            'harm': discussionData.harms,
+            'principle': cards.principle
+        };
+    });
+
+    // props = {
+    //     data: [
+    //         {
+    //             'name': 'stakeholder1',
+    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
+    //             'harm': ['harm1', 'harm2', 'harm3'],
+    //             'principle': ['principle1', 'principle2', 'principle3'],
+    //         },
+    //         {
+    //             'name': 'stakeholder2',
+    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
+    //             'harm': ['harm1', 'harm2', 'harm3'],
+    //             'principle': ['principle1', 'principle2', 'principle3'],
+    //         },
+    //         {
+    //             'name': 'stakeholder3',
+    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
+    //             'harm': ['harm1', 'harm2', 'harm3'],
+    //             'principle': ['principle1', 'principle2', 'principle3'],
+    //         },
+    //         {
+    //             'name': 'stakeholder4',
+    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
+    //             'harm': ['harm1', 'harm2', 'harm3'],
+    //             'principle': ['principle1', 'principle2', 'principle3'],
+    //         },
+    //     ]
+    // }
 
     return (
         <PageContainer>

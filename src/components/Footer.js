@@ -22,7 +22,13 @@ function Footer(props) {
             case GameStates.REVIEW:
                 return (
                     <div>
-                        <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
+                        <ReviewTimer /> : <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
+                    </div>
+                );
+            case GameStates.DISCUSS: 
+                return (
+                    <div>
+                        <DiscussionTimer /> : <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
                     </div>
                 );
             default:
@@ -55,7 +61,7 @@ function Footer(props) {
 }
 
 function LobbyTimer(props) {
-    const { time, start, pause, reset, status } = useTimer({
+    const timer = useTimer({
         initialTime: 5,
         timerType: 'DECREMENTAL',
         endTime: 0
@@ -64,36 +70,70 @@ function LobbyTimer(props) {
 
     useEffect(() => {
         // Handle time counters
-        SocketService.startGameListener(start);
-        SocketService.stopCountDownListener(reset);
+        SocketService.startGameListener(timer.start);
+        SocketService.stopCountDownListener(timer.reset);
     }, []);
 
-    return convertSecondsToTime(time);
+    return convertSecondsToTime(timer.time);
 }
 
 function ReviewTimer(props) {
-    const { time, start, pause, reset, status } = useTimer({
-        initialTime: 600,
+    const timer = useTimer({
+        initialTime: 5,
         timerType: 'DECREMENTAL',
         endTime: 0
         // onTimeOver: footerTimeOutCallback(GameStates.LOBBY)  -   @TODO: make better after MVP
     });
 
     useEffect(() => {
-        // Handle timeout counters
-        TimerService.startReviewTimerListener(start);
-        // SocketService.startGameListener(start);
-        // SocketService.stopCountDownListener(reset);
+        // Handle time counters
+        SocketService.startGameListener(timer.start);
+        SocketService.stopCountDownListener(timer.reset);
     }, []);
 
-    return convertSecondsToTime(time);
+    return convertSecondsToTime(timer.time);
 }
+
+function DiscussionTimer(props) {
+    const timer = useTimer({
+        initialTime: 5,
+        timerType: 'DECREMENTAL',
+        endTime: 0
+        // onTimeOver: footerTimeOutCallback(GameStates.LOBBY)  -   @TODO: make better after MVP
+    });
+
+    useEffect(() => {
+        // Handle time counters
+        SocketService.startGameListener(timer.start);
+        SocketService.stopCountDownListener(timer.reset);
+    }, []);
+
+    return convertSecondsToTime(timer.time);
+}
+
+// function ReviewTimer(props) {
+//     const { time, start, pause, reset, status } = useTimer({
+//         initialTime: 600,
+//         timerType: 'DECREMENTAL',
+//         endTime: 0
+//         // onTimeOver: footerTimeOutCallback(GameStates.LOBBY)  -   @TODO: make better after MVP
+//     });
+
+//     useEffect(() => {
+//         // Handle timeout counters
+//         TimerService.startReviewTimerListener(start);
+//         // SocketService.startGameListener(start);
+//         // SocketService.stopCountDownListener(reset);
+//     }, []);
+
+//     return convertSecondsToTime(time);
+// }
 
 function ReadyCount(props) {
     const lobbyPlayers = props.lobbyPlayers;
     const lobbyReadyStatus = props.lobbyReadyStatus;
 
-    return `${lobbyReadyStatus.count}/${lobbyPlayers.length}`;
+    return `${lobbyReadyStatus.count}/${lobbyPlayers.length} Players Ready`;
 }
 
 // function LobbyFooter(props) {

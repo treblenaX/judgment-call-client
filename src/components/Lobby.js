@@ -29,6 +29,8 @@ function Lobby(props) {
         SocketService.errorListener(console.log);
         // Listen for the game start
         SocketService.startDealListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
+        // Discussion stuff
+        SocketService.startDiscussionListener(lobbyStateCallbacks, setPageCallback);
     }, [lobbyState]);   // RERUNS - when lobby state needs to refresh
 
     // TODO: Handle ready up click

@@ -50,6 +50,9 @@ function App() {
   const [clientPlayer, setClientPlayer] = useState(null);
   const [lobbyCode, setLobbyCode] = useState(null);
 
+  // Discussion Data
+  const [focusPlayer, setFocusPlayer] = useState(null);
+
   // whether or not to show the debug panel
   const [showDebug, setShowDebug] = useState(DEBUG);
 
@@ -67,7 +70,8 @@ function App() {
     setLobbyPlayers: setLobbyPlayers,
     setLobbyReadyStatus: setLobbyReadyStatus,
     setClientPlayer: setClientPlayer,
-    setGameMaster: setGameMaster
+    setGameMaster: setGameMaster,
+    setFocusPlayer: setFocusPlayer
   };
 
   // @TODO: finish doing this ^
@@ -133,11 +137,26 @@ function App() {
                   gameState={gameState}
                   lobbyStateCallbacks={setLobbyStateCallbacks}
                   setClientPlayerCallback={setClientPlayer}
+                  setPageCallback={setPage}
                 />;
       case 'discussion':
-        return <Discussion />;
+        return <Discussion 
+                  clientPlayer={clientPlayer}
+                  lobbyPlayers={lobbyPlayers}
+                  gameMaster={gameMaster}
+                  focusPlayer={focusPlayer}
+                  lobbyStateCallbacks={setLobbyStateCallbacks}
+                  setPageCallback={setPage}
+                />;
       case 'mitigation':
-        return <Mitigation />;
+        return <Mitigation 
+                  clientPlayer={clientPlayer}
+                  lobbyPlayers={lobbyPlayers}
+                  gameMaster={gameMaster}
+                  focusPlayer={focusPlayer}
+                  lobbyStateCallbacks={setLobbyStateCallbacks}
+                  setPageCallback={setPage}
+                />;
       case 'summary':
         return <Summary />;
       default:

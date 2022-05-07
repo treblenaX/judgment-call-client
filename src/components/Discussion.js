@@ -11,42 +11,58 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
+import { SocketService } from '../services/SocketService';
 
 function Discussion(props) {
-    // TODO: Get real props from server
-    props = {
-        stakeholderTitle: 'Stakeholder Title',
-        review: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
-        rating: 3,
-        data: {
-            benefits: ['lorem', 'ipsum', 'dolor'],
-            harms: ['lorem', 'ipsum', 'dolor'],
-            themes: ['lorem', 'ipsum', 'dolor'],
-        }
-    }
+    const clientPlayer = props.clientPlayer;
+    const focusPlayer = props.focusPlayer;
+    const lobbyStateCallbacks = props.lobbyStateCallbacks;
+    const setPageCallback = props.setPageCallback;
 
     // ui state
     const [dialogOpen, setDialogOpen] = useState(false);
     const [activeCol, setActiveCol] = useState(null);
 
+    useState(() => {
+        // Listen for lobby state refresh
+        SocketService.lobbyRefreshListener(lobbyStateCallbacks);
+
+        SocketService.startMitigationListener(lobbyStateCallbacks, setPageCallback);
+    }, []);
 
     // TODO: Handle ready
     const onClickReady = async (e) => {
-        console.log('ready');
+        // Build request
+        const request = {
+            lobbyCode: clientPlayer.lobbyCode,
+            pId: clientPlayer.pId,
+            readyState: !clientPlayer.readyState
+        }
+
+        // Send socket request
+        SocketService.toggleDiscussionReady(request);
     }
     
     // onDialogOpen
     const onDialogOpen = (col) => {
-        console.log('Opening dialog with col ' + col);
+        // console.log('Opening dialog with col ' + col);
         setActiveCol(col);
         setDialogOpen(true);
     }
 
     // TODO: Handle dialog entry
     const onDialogClose = () => {
-        const data = document.getElementById('textfield').value;
+        const val = document.getElementById('textfield').value;
         const col = activeCol;
-        console.log(col, data);
+
+        // Send update to server
+        const request = {
+            lobbyCode: clientPlayer.lobbyCode,
+            col: col,
+            val: val
+        }
+        SocketService.updateDiscussionData(request);
+
         setDialogOpen(false);
     }
 
@@ -55,14 +71,22 @@ function Discussion(props) {
             <PageContainer>
                 <Stack spacing={2} direction='column'>
                     <Header title='DISCUSSION' />
-                    <Review stakeholderTitle={props.stakeholderTitle} review={props.review} rating={props.rating}/>
-                    <Table data={props.data} onOpenDialog={onDialogOpen}/>
-                    <Button 
-                        variant="contained"
-                        color="secondary"
-                        onClick={onClickReady}>
-                        Ready
-                    </Button>
+                    <Review stakeholderTitle={focusPlayer.stakeholder.name} review={focusPlayer.review} rating={focusPlayer.rating.name}/>
+                    <Table data={focusPlayer.data} onOpenDialog={onDialogOpen}/>
+                    {   !clientPlayer.readyState
+                        ? <Button 
+                            variant="contained"
+                            color="secondary"
+                            onClick={onClickReady}>
+                            Ready
+                        </Button>
+                        : <Button 
+                            variant="primary"
+                            color="secondary"
+                            onClick={onClickReady}>
+                            Unready
+                        </Button>
+                    }
                 </Stack>
             </PageContainer>
             <Dialog open={dialogOpen} onClose={onDialogClose}>
@@ -102,6 +126,7 @@ function Review(props) {
 
 function Table(props) {
     const cols = [];
+    // console.log(props.data);
     for (let col in props.data) {
         cols.push(<TableColumn onOpenDialog={props.onOpenDialog} name={col} items={props.data[col]} />);
     }
