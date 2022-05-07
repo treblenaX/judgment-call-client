@@ -10,46 +10,19 @@ function Mitigation(props) {
     const setPageCallback = props.setPageCallback;
 
     // TODO: Replace with real props
-    props.data = lobbyPlayers.map(player => {
-        const cards = player.cards;
-        const discussionData = player.data.discussion;
+    props = {
+        data: lobbyPlayers.map(player => {
+                const cards = player.cards;
+                const discussionData = player.data.discussion;
 
-        return {
-            'name': cards.stakeholder,
-            'benefit': discussionData.benefits,
-            'harm': discussionData.harms,
-            'principle': cards.principle
-        };
-    });
-
-    // props = {
-    //     data: [
-    //         {
-    //             'name': 'stakeholder1',
-    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
-    //             'harm': ['harm1', 'harm2', 'harm3'],
-    //             'principle': ['principle1', 'principle2', 'principle3'],
-    //         },
-    //         {
-    //             'name': 'stakeholder2',
-    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
-    //             'harm': ['harm1', 'harm2', 'harm3'],
-    //             'principle': ['principle1', 'principle2', 'principle3'],
-    //         },
-    //         {
-    //             'name': 'stakeholder3',
-    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
-    //             'harm': ['harm1', 'harm2', 'harm3'],
-    //             'principle': ['principle1', 'principle2', 'principle3'],
-    //         },
-    //         {
-    //             'name': 'stakeholder4',
-    //             'benefit': ['benefit1', 'benefit2', 'benefit3'],
-    //             'harm': ['harm1', 'harm2', 'harm3'],
-    //             'principle': ['principle1', 'principle2', 'principle3'],
-    //         },
-    //     ]
-    // }
+                return {
+                    'name': cards.stakeholder.name,
+                    'benefit': discussionData.benefits,
+                    'harm': discussionData.harms,
+                    'theme': discussionData.themes
+                };
+            })
+    };
 
     return (
         <PageContainer>
@@ -64,32 +37,40 @@ function Mitigation(props) {
 
 // TODO: Figure out how to have table headers properly aligned
 function Table(props) {
+    let stakeholders = [];
+    let benefits = [];
+    let harms = [];
+    let themes = [];
+
+    props.data.forEach(p => {
+        stakeholders.push(p.name);
+        p.benefit.forEach(b => benefits.push(b));
+        p.harm.forEach(h => harms.push(h));
+        p.theme.forEach(t => themes.push(t));
+    });
+
     return (
         <Stack spacing={2} direction='column'>
-            {/* <Stack spacing={4} direction='row' justifyContent='center'>
-                <strong className='table-header'>STAKEHOLDER</strong>
-                <strong className='table-header'>BENEFIT</strong>
-                <strong className='table-header'>HARM</strong>
-                <strong className='table-header'>PRINCIPLE</strong>
-            </Stack> */}
-            {props.data.map((stakeholder, index) => {
-                return (
-                    <TableRow key={index} stakeholder={stakeholder} />
-                );
-            })}
+            <TableRow key={0} name='STAKEHOLDERS' payload={stakeholders} />
+            <TableRow key={1} name='BENEFITS' payload={benefits} />
+            <TableRow key={2} name='HARMS' payload={harms} />
+            <TableRow key={3} name='THEMES' payload={themes} />
         </Stack>
     );
 }
 
 function TableRow(props) {
+    const name = props.name;
+    const payload = props.payload;
+    const html = payload.map(data => <span>{data}</span>);
     return (
-        <Stack spacing={4} direction='row' justifyContent='center'>
-            <span>{props.stakeholder.name}</span>
-            <span>{props.stakeholder.benefit.join('\n')}</span>
-            <span>{props.stakeholder.harm.join('\n')}</span>
-            <span>{props.stakeholder.principle.join('\n')}</span>
+        <Stack spacing={2} direction='row' justifyContent='center'>
+            <strong className='table-header'>{name}</strong>
+            <Stack spacing={payload.length} direction='column' justifyContent='center'>
+                {html}
+            </Stack>
         </Stack>
-    );
+    )
 }
 
 export default Mitigation;

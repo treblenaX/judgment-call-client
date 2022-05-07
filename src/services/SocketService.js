@@ -159,7 +159,6 @@ export class SocketService {
             lobbyStateCallbacks.setFocusPlayer(focusPlayer);
             lobbyStateCallbacks.setGameMaster(gameMaster);
             lobbyStateCallbacks.setLobbyPlayers(players);
-            console.log(players);
             lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
             // Reset client player 
             lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));

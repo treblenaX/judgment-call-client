@@ -32,7 +32,7 @@ function Footer(props) {
                     </div>
                 );
             default:
-                return 'Made With <3 By Elbert Cheng & Alan Wen';
+                return 'Adapted With <3 By Elbert Cheng & Alan Wen';
         }
     }
     
