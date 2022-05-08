@@ -171,6 +171,7 @@ function App() {
                 clientPlayer={clientPlayer}
                 lobbyPlayers={lobbyPlayers}
                 endTime={endTime}
+                gameMaster={gameMaster}
                 lobbyStateCallbacks={setLobbyStateCallbacks}
                 setPageCallback={setPage}
               />;

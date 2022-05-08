@@ -8,8 +8,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Button, Stack } from '@mui/material';
 import Header from './Header';
+import { FileDownloadService } from '../services/FileDownloadService';
 
 function Summary(props) {
+    const gameMaster = props.gameMaster;
     const lobbyPlayers = props.lobbyPlayers;
     const clientPlayer = props.clientPlayer;
     const endTimestamp = props.endTime;
@@ -18,44 +20,15 @@ function Summary(props) {
     const scenario = lobbyPlayers[0].cards.scenario.name;
     const data = parseData(lobbyPlayers);
 
-    console.log(clientPlayer);
-
-    // // TODO: Replace with real props
-    // props = {
-    //     data: {
-    //         scenario: 'scenario',
-    //         gameStart: '0:00',
-    //         gameEnd: '0:00',
-    //         players: lobbyPlayers.,
-    //         benefits: ['benefit1', 'benefit2', 'benefit3', 'benefit4'],
-    //         harms: ['harm1', 'harm2', 'harm3', 'harm4'],
-    //         themes: ['theme1', 'theme2', 'theme3', 'theme4'],
-    //         responses: ['response1', 'response2', 'response3', 'response4'],
-    //     }
-    // };
-
-    const createRows = (data) => {
-        return (data.map((player, index) => {
-            return (<TableRow key={index}>
-                <TableCell>{player.name}</TableCell>
-                <TableCell>{player.stakeholder}</TableCell>
-                <TableCell>{player.rating}</TableCell>
-                <TableCell>{player.principle}</TableCell>
-                <TableCell>{player.review}</TableCell>
-                <TableCell>{player.benefits}</TableCell>
-                <TableCell>{player.harms}</TableCell>
-                <TableCell>{player.themes}</TableCell>
-                <TableCell>{player.mitigation}</TableCell>
-                <TableCell>{player.judgment}</TableCell>
-            </TableRow>)
-        }));
-    }
-
-    const html = createRows(data);
-
-    // TODO: Handle click
     const onClickFinish = (e) => {
-        console.log('finish');
+        const payload = {
+            players: lobbyPlayers,
+            gameMaster: gameMaster,
+            clientPlayer: clientPlayer,
+            timestamp: endTimestamp
+        };
+
+        FileDownloadService.downloadFile(payload);
     }
 
     return (
@@ -90,27 +63,12 @@ function Summary(props) {
                                         <TableCell>{player.judgment}</TableCell>
                                     </TableRow>)
                                 })}
-                                {/* {props.data.players.map((player, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{props.data.scenario}</TableCell>
-                                        <TableCell>{props.data.gameStart}</TableCell>
-                                        <TableCell>{props.data.gameEnd}</TableCell>
-                                        <TableCell>{player}</TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell>{props.data.benefits[index]}</TableCell>
-                                        <TableCell>{props.data.harms[index]}</TableCell>
-                                        <TableCell>{props.data.themes[index]}</TableCell>
-                                        <TableCell>{props.data.responses[index]}</TableCell>
-                                    </TableRow>
-                                ))} */}
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    {/* <Button variant='contained' color='secondary' onClick={onClickFinish}>
-                        Finish
-                    </Button> */}
+                    <Button variant='contained' color='secondary' onClick={onClickFinish}>
+                        Download Results
+                    </Button>
                 </Stack>
             </div>
         </div>
