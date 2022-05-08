@@ -42,7 +42,8 @@ function Judgment(props) {
                 <Header title='JUDGMENT' />
                 <p>{instructionText}</p>
                 <h3>What would you do?</h3>
-                <TextAreaModule 
+                <TextAreaModule
+                    readyState={clientPlayer.readyState}
                     submitCallback={submitCallback} 
                     label='Moving forward, what is the best solution for making a better product?' 
                 />
