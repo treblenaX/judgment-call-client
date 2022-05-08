@@ -3,13 +3,21 @@ import PageContainer from './PageContainer';
 import Header from './Header';
 import TextAreaModule from './TextAreaModule';
 import Stack from '@mui/material/Stack';
+import { SocketService } from '../services/SocketService';
+import { useEffect } from 'react';
+
+const instructionText = `
+    How could the product be changed to prevent these
+    problems?
+`;
 
 function Mitigation(props) {
+    const clientPlayer = props.clientPlayer;
     const lobbyPlayers = props.lobbyPlayers;
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setPageCallback = props.setPageCallback;
+    const setClientPlayerCallback = props.setClientPlayerCallback;
 
-    // TODO: Replace with real props
     props = {
         data: lobbyPlayers.map(player => {
                 const cards = player.cards;
@@ -24,12 +32,37 @@ function Mitigation(props) {
             })
     };
 
+    const submitCallback = (data) => {
+        // Build request
+        const request = {
+            lobbyCode: clientPlayer.lobbyCode,
+            pId: clientPlayer.pId,
+            mitigation: data,
+            readyState: !clientPlayer.readyState
+        }
+
+        // Send the request
+        SocketService.sendMitigation(request);
+    }
+
+    useEffect(() => {
+        // Listen for refresh and next phase start
+        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
+        SocketService.startJudgmentCallListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
+    }, [])
+
     return (
         <PageContainer>
             <Stack spacing={2} direction='column'>
                 <Header title='MITIGATION' />
+                <p>Choose one stakeholder, feature, harm, or theme that stood out
+    in the discussion. </p>
                 <Table data={props.data} />
-                <TextAreaModule />
+                <TextAreaModule
+                    readyState={clientPlayer.readyState}
+                    label={instructionText}
+                    submitCallback={submitCallback}
+                />
             </Stack>
         </PageContainer>
     )

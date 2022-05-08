@@ -65,6 +65,16 @@ export class SocketService {
         socket.volatile.emit(ClientSocketStates.DISCUSSION_READY, request);
     }
 
+    /** Mitigation Functions */
+    static sendMitigation(request) {
+        socket.volatile.emit(ClientSocketStates.SEND_MITIGATION, request);
+    }
+
+    /** Judgment Call Functions */
+    static sendJudgmentCall(request) {
+        socket.volatile.emit(ClientSocketStates.SEND_JUDGMENT_CALL, request);
+    }
+
     /** Ready Functions */
     static togglePlayerReady(request) {
         socket.volatile.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
@@ -122,7 +132,7 @@ export class SocketService {
             // Reset client player and grab the cards
             lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
 
-            socket.emit(ClientSocketStates.CARDS_DEALT);
+            // socket.emit(ClientSocketStates.CARDS_DEALT);
             // Start game and navigate to 'review' page
             setPageCallback('scenario');
         });
@@ -133,12 +143,14 @@ export class SocketService {
             // const serverMessage = response.message;
             const lobby = response.lobby;
             const players = lobby.players;
+            const gameState = lobby.gameMaster.state;
             const gameMaster = lobby.gameMaster;
             const readyStatus = lobby.readyStatus;
             const focusPlayer = gameMaster.focusPlayer;
 
             lobbyStateCallbacks.setFocusPlayer(focusPlayer);
             lobbyStateCallbacks.setGameMaster(gameMaster);
+            lobbyStateCallbacks.setGameState(gameState);
             lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
             // Reset client player 
             lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
@@ -155,9 +167,11 @@ export class SocketService {
             const gameMaster = lobby.gameMaster;
             const readyStatus = lobby.readyStatus;
             const focusPlayer = gameMaster.focusPlayer;
+            const gameState = gameMaster.state;
 
             lobbyStateCallbacks.setFocusPlayer(focusPlayer);
             lobbyStateCallbacks.setGameMaster(gameMaster);
+            lobbyStateCallbacks.setGameState(gameState);
             lobbyStateCallbacks.setLobbyPlayers(players);
             lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
             // Reset client player 
@@ -168,22 +182,46 @@ export class SocketService {
     }
 
     static startJudgmentCallListener(lobbyStateCallbacks, setPageCallback) {
-        // socket.on(ServerSocketStates.START_MITIGATION, (response) => {
-        //     // const serverMessage = response.message;
-        //     const lobby = response.lobby;
-        //     const players = lobby.players;
-        //     const gameMaster = lobby.gameMaster;
-        //     const readyStatus = lobby.readyStatus;
-        //     const focusPlayer = gameMaster.focusPlayer;
+        socket.on(ServerSocketStates.START_JUDGMENT_CALL, (response) => {
+            // const serverMessage = response.message;
+            const lobby = response.lobby;
+            const players = lobby.players;
+            const gameMaster = lobby.gameMaster;
+            const gameState = gameMaster.state;
+            const readyStatus = lobby.readyStatus;
+            const focusPlayer = gameMaster.focusPlayer;
 
-        //     lobbyStateCallbacks.setFocusPlayer(focusPlayer);
-        //     lobbyStateCallbacks.setGameMaster(gameMaster);
-        //     lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
-        //     // Reset client player 
-        //     lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
+            lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+            lobbyStateCallbacks.setGameMaster(gameMaster);
+            lobbyStateCallbacks.setGameState(gameState);
+            lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+            // Reset client player 
+            lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
 
-        //     setPageCallback('mitigation');
-        // });
+            setPageCallback('judgment');
+        });
+    }
+
+    static startSummaryListener(lobbyStateCallbacks, setPageCallback) {
+        socket.on(ServerSocketStates.START_SUMMARY, (response) => {
+            // const serverMessage = response.message;
+            const lobby = response.lobby;
+            const players = lobby.players;
+            const gameMaster = lobby.gameMaster;
+            const gameState = gameMaster.state;
+            const readyStatus = lobby.readyStatus;
+            const focusPlayer = gameMaster.focusPlayer;
+
+            lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+            lobbyStateCallbacks.setGameMaster(gameMaster);
+            lobbyStateCallbacks.setGameState(gameState);
+            lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+            lobbyStateCallbacks.setEndTime(response.timestamp);
+            // Reset client player 
+            lobbyStateCallbacks.setClientPlayer((prevState) => players.find((player) => player.pId === prevState.pId));
+
+            setPageCallback('summary');
+        })
     }
 
     /** @TODO: Move this to Timer after prod */

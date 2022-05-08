@@ -27,14 +27,12 @@ function Scenario(props) {
         };
         
         SocketService.sendReview(request);
-        // Listen for lobby state refresh
-        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
-        SocketService.startDiscussionListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
     }
 
     useEffect(() => {
-        // Send review ready to server
-
+        // Listen for lobby state refresh
+        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
+        SocketService.startDiscussionListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
     }, [])
 
     const situation = gameMaster.scenario.scenario_description; 
@@ -47,7 +45,11 @@ function Scenario(props) {
                 <Header title='REVIEW' />
                 <div className='instruction-text'>{instructions}</div>
                 <CardContainer cards={cards} />
-                <TextAreaModule readyState={clientPlayer.readyState} label='Write your review...' submitCallback={submitCallback} />
+                <TextAreaModule 
+                    readyState={clientPlayer.readyState} 
+                    label='Write your review...' 
+                    submitCallback={submitCallback} 
+                />
             </Stack>
         </PageContainer>
     );

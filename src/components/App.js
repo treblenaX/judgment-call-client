@@ -38,6 +38,7 @@ function App() {
   const [joinLobbyCode, setJoinLobbyCode] = useState('');
   const [isClientHost, setClientHost] = useState(false);
   const [errorState, setErrorState] = useState(null);
+  const [endTime, setEndTime] = useState(null);
 
   // States that have passed through multiple components 
   const [gameState, setGameState] = useState(GameStates.INIT);
@@ -71,7 +72,8 @@ function App() {
     setLobbyReadyStatus: setLobbyReadyStatus,
     setClientPlayer: setClientPlayer,
     setGameMaster: setGameMaster,
-    setFocusPlayer: setFocusPlayer
+    setFocusPlayer: setFocusPlayer,
+    setEndTime: setEndTime
   };
 
   // @TODO: finish doing this ^
@@ -129,7 +131,13 @@ function App() {
       case 'textarea':
         return <TextAreaModule />;
       case 'judgment':
-        return <Judgment />;
+        return <Judgment 
+                  clientPlayer={clientPlayer}
+                  endTime={endTime}
+                  lobbyStateCallbacks={setLobbyStateCallbacks}
+                  setClientPlayerCallback={setClientPlayer}
+                  setPageCallback={setPage}
+                />;
       case 'scenario':
         return <Scenario 
                   clientPlayer={clientPlayer}
@@ -155,10 +163,17 @@ function App() {
                   gameMaster={gameMaster}
                   focusPlayer={focusPlayer}
                   lobbyStateCallbacks={setLobbyStateCallbacks}
+                  setClientPlayerCallback={setClientPlayer}
                   setPageCallback={setPage}
                 />;
       case 'summary':
-        return <Summary />;
+        return <Summary 
+                clientPlayer={clientPlayer}
+                lobbyPlayers={lobbyPlayers}
+                endTime={endTime}
+                lobbyStateCallbacks={setLobbyStateCallbacks}
+                setPageCallback={setPage}
+              />;
       default:
         return <>404: No such page {pageId}</>;
     }

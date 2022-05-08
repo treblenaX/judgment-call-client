@@ -31,27 +31,22 @@ function Footer(props) {
                         <DiscussionTimer /> : <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
                     </div>
                 );
+            case GameStates.MITIGATION:
+                return (
+                    <div>
+                        <MitigationTimer /> : <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
+                    </div>
+                );
+            case GameStates.JUDGMENT_CALL:
+                return (
+                    <div>
+                        <JudgmentTimer /> : <ReadyCount lobbyPlayers={lobbyPlayers} lobbyReadyStatus={lobbyReadyStatus} />
+                    </div>
+                );
             default:
-                return 'Adapted With <3 By Elbert Cheng & Alan Wen';
+                return 'Adapted With <3 By Elbert Cheng, Alan Wen, and Wes E. King';
         }
     }
-    
-    // const getTimer = () => {
-    //     switch (gameState) {
-    //         case GameStates.LOBBY:
-    //             return <LobbyTimer 
-    //                 footerTimeOutCallback={footerTimeOutCallback}
-    //                 lobbyPlayers={lobbyPlayers}
-    //                 lobbyReadyStatus={lobbyReadyStatus}
-    //             />;
-    //         case GameStates.REVIEW:
-    //             return <ReviewTimer
-
-    //             />;
-    //         default:
-    //             return 'Made With <3 By Elbert Cheng & Alan Wen';
-    //     }
-    // }
 
     return (
         <footer>
@@ -74,7 +69,7 @@ function LobbyTimer(props) {
         SocketService.stopCountDownListener(timer.reset);
     }, []);
 
-    return convertSecondsToTime(timer.time);
+    return 'NEXT PHASE COUNTDOWN: ' + convertSecondsToTime(timer.time);
 }
 
 function ReviewTimer(props) {
@@ -91,7 +86,7 @@ function ReviewTimer(props) {
         SocketService.stopCountDownListener(timer.reset);
     }, []);
 
-    return convertSecondsToTime(timer.time);
+    return 'NEXT PHASE COUNTDOWN: ' + convertSecondsToTime(timer.time);
 }
 
 function DiscussionTimer(props) {
@@ -108,7 +103,41 @@ function DiscussionTimer(props) {
         SocketService.stopCountDownListener(timer.reset);
     }, []);
 
-    return convertSecondsToTime(timer.time);
+    return 'NEXT PHASE COUNTDOWN: ' + convertSecondsToTime(timer.time);
+}
+
+function MitigationTimer(props) {
+    const timer = useTimer({
+        initialTime: 5,
+        timerType: 'DECREMENTAL',
+        endTime: 0
+        // onTimeOver: footerTimeOutCallback(GameStates.LOBBY)  -   @TODO: make better after MVP
+    });
+
+    useEffect(() => {
+        // Handle time counters
+        SocketService.startGameListener(timer.start);
+        SocketService.stopCountDownListener(timer.reset);
+    }, []);
+
+    return 'NEXT PHASE COUNTDOWN: ' + convertSecondsToTime(timer.time);
+}
+
+function JudgmentTimer(props) {
+    const timer = useTimer({
+        initialTime: 5,
+        timerType: 'DECREMENTAL',
+        endTime: 0
+        // onTimeOver: footerTimeOutCallback(GameStates.LOBBY)  -   @TODO: make better after MVP
+    });
+
+    useEffect(() => {
+        // Handle time counters
+        SocketService.startGameListener(timer.start);
+        SocketService.stopCountDownListener(timer.reset);
+    }, []);
+
+    return 'NEXT PHASE COUNTDOWN: ' + convertSecondsToTime(timer.time);
 }
 
 // function ReviewTimer(props) {
