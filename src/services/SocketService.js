@@ -12,6 +12,7 @@ export var socket = null;
 
 export class SocketService {
     static async joinLobby(request) {
+        //
         return new Promise(async (resolve, reject) => {
             try {
                 await this.verifySocketConnection();
@@ -19,6 +20,7 @@ export class SocketService {
                 socket.volatile.emit(ClientSocketStates.CONNECT_TO_LOBBY, request);
 
                 socket.on(ServerSocketStates.PLAYER_CONNECTED_TO_LOBBY, (response) => {
+                    console.log(response);
                     if (!response.error) {
                         resolve(response);
                     } else {

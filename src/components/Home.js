@@ -78,6 +78,15 @@ function Home(props) {
         <PageContainer>
             <Stack direction='column' spacing={2}>
                 <h1 id='title'>JUDGMENT CALL</h1>
+                <p>
+                    You'll be playing the game with a minimum of 4 players and a maximum of 6 players.
+                </p>
+                <p>
+                    Be careful of these known bugs:</p>
+                    <ul>
+                        <li>Create Lobby/Join Lobby stuck on loading screen.</li>
+                            <p>The loading shouldn't take more than 30 seconds. Please refresh and try again and keep doing that until it works.</p>
+                    </ul>
                 <TextField 
                     required
                     fullWidth
