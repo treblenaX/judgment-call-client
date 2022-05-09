@@ -19,14 +19,15 @@ function Lobby(props) {
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setClientPlayerCallback = props.setClientPlayerCallback;
     const setGameStateCallback = lobbyStateCallbacks.setGameState;
+    const setErrorStateCallback = props.setErrorStateCallback;
 
     useEffect(() => {
         // Set Game state to LOBBY on lobby page
         setGameStateCallback(GameStates.LOBBY);
         // Listen for lobby state refresh
         SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
-        // @TODO: Alan replace this w/ `setErrorState`
-        SocketService.errorListener(console.log);
+        // Listen for errors
+        SocketService.errorListener(setErrorStateCallback);
         // Listen for the game start
         SocketService.startDealListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
         // Discussion stuff

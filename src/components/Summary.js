@@ -9,6 +9,8 @@ import Paper from '@mui/material/Paper';
 import { Button, Stack } from '@mui/material';
 import Header from './Header';
 import { FileDownloadService } from '../services/FileDownloadService';
+import { useEffect } from 'react';
+import { SocketService } from '../services/SocketService';
 
 function Summary(props) {
     const gameMaster = props.gameMaster;
@@ -20,6 +22,8 @@ function Summary(props) {
     const scenario = lobbyPlayers[0].cards.scenario.name;
     const data = parseData(lobbyPlayers);
 
+    const setErrorStateCallback = props.setErrorStateCallback;
+
     const onClickFinish = (e) => {
         const payload = {
             players: lobbyPlayers,
@@ -30,6 +34,11 @@ function Summary(props) {
 
         FileDownloadService.downloadFile(payload);
     }
+
+    useEffect(() => {
+        // Listen for errors
+        SocketService.errorListener(setErrorStateCallback);
+    }, [])
 
     return (
         <div className='summary-wrapper'>

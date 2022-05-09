@@ -16,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import { SocketService } from '../services/SocketService';
 
-const DEBUG = false;
+const DEBUG = true;
 const PAGE_IDS = [
   'home', 
   'lobby', 
@@ -94,7 +94,7 @@ function App() {
   const getPage = () => {
     switch (pageId) {
       case 'home':
-        return <Home 
+        return <Home
                   setPlayerNameCallback={setPlayerName} 
                   setPageCallback={setPage} 
                   setClientHostCallback={setClientHost}
@@ -137,6 +137,7 @@ function App() {
                   lobbyStateCallbacks={setLobbyStateCallbacks}
                   setClientPlayerCallback={setClientPlayer}
                   setPageCallback={setPage}
+                  setErrorStateCallback={setErrorState}
                 />;
       case 'scenario':
         return <Scenario 
@@ -146,6 +147,7 @@ function App() {
                   lobbyStateCallbacks={setLobbyStateCallbacks}
                   setClientPlayerCallback={setClientPlayer}
                   setPageCallback={setPage}
+                  setErrorStateCallback={setErrorState}
                 />;
       case 'discussion':
         return <Discussion 
@@ -155,6 +157,7 @@ function App() {
                   focusPlayer={focusPlayer}
                   lobbyStateCallbacks={setLobbyStateCallbacks}
                   setPageCallback={setPage}
+                  setErrorStateCallback={setErrorState}
                 />;
       case 'mitigation':
         return <Mitigation 
@@ -165,6 +168,7 @@ function App() {
                   lobbyStateCallbacks={setLobbyStateCallbacks}
                   setClientPlayerCallback={setClientPlayer}
                   setPageCallback={setPage}
+                  setErrorStateCallback={setErrorState}
                 />;
       case 'summary':
         return <Summary 
@@ -174,6 +178,7 @@ function App() {
                 gameMaster={gameMaster}
                 lobbyStateCallbacks={setLobbyStateCallbacks}
                 setPageCallback={setPage}
+                setErrorStateCallback={setErrorState}
               />;
       default:
         return <>404: No such page {pageId}</>;
@@ -212,7 +217,7 @@ function App() {
 
   // useEffect
   useEffect(() => {
-    SocketService.debug();
+    // SocketService.debug();
     if (errorState) {
       toast.error(errorState);
     }

@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import { SocketService } from '../services/SocketService';
 import { useEffect } from 'react';
 import { GameInstructions } from '../constants/GameInstructions';
+import Button from '@mui/material/Button';
 
 function Scenario(props) {
     const clientPlayer = props.clientPlayer;
@@ -15,8 +16,13 @@ function Scenario(props) {
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setClientPlayerCallback = props.setClientPlayerCallback;
     const setPageCallback = props.setPageCallback;
+    const setErrorStateCallback = props.setErrorStateCallback;
 
-    // TODO: Handle submit callback
+    // Callbacks
+    const clickInstructions = () => {
+        alert(GameInstructions.REVIEW);
+    }
+
     const submitCallback = (data) => {
         // Build request
         const request = {
@@ -30,26 +36,35 @@ function Scenario(props) {
     }
 
     useEffect(() => {
+        // Listen for errors
+        SocketService.errorListener(setErrorStateCallback);
         // Listen for lobby state refresh
         SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
         SocketService.startDiscussionListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
     }, [])
 
-    const situation = gameMaster.scenario.scenario_description; 
     const cards = clientPlayer.cards;
-    const instructions = GameInstructions.REVIEW;
 
     return (
         <PageContainer>
             <Stack spacing={2} direction='column'>
-                <Header title='REVIEW' />
-                <div className='instruction-text'>{instructions}</div>
+                <Header title={'THE SCENARIO - ' + gameMaster.scenario.name} />
+                <hr className="solid"></hr>
+                <div className='instruction-text'>
+                    {gameMaster.scenario.description}
+                </div>
                 <CardContainer cards={cards} />
                 <TextAreaModule 
                     readyState={clientPlayer.readyState} 
                     label='Write your review...' 
                     submitCallback={submitCallback} 
                 />
+                <Button 
+                    variant="outlined"
+                    color="secondary"
+                    onClick={clickInstructions}>
+                    Instructions
+                </Button>
             </Stack>
         </PageContainer>
     );
@@ -78,11 +93,6 @@ function CardContainer(props) {
                 type='Rating'
                 id='2' 
                 payload={rating} 
-                />
-            <Card
-                type='Scenario'
-                id='3'
-                payload={scenario}
                 />
         </Stack>
     );

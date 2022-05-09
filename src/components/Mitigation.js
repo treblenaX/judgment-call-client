@@ -5,6 +5,8 @@ import TextAreaModule from './TextAreaModule';
 import Stack from '@mui/material/Stack';
 import { SocketService } from '../services/SocketService';
 import { useEffect } from 'react';
+import { GameInstructions } from '../constants/GameInstructions';
+import { Button } from '@mui/material';
 
 const instructionText = `
     How could the product be changed to prevent these
@@ -17,6 +19,7 @@ function Mitigation(props) {
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setPageCallback = props.setPageCallback;
     const setClientPlayerCallback = props.setClientPlayerCallback;
+    const setErrorStateCallback = props.setErrorStateCallback;
 
     props = {
         data: lobbyPlayers.map(player => {
@@ -32,6 +35,20 @@ function Mitigation(props) {
             })
     };
 
+    const onClickInstructions = () => {
+        alert(GameInstructions.MITIGATION);
+    }
+    const onClickScenarioDetails = () => { 
+        const scenario = clientPlayer.cards.scenario;
+
+        alert(
+            `${scenario.name}
+
+            ${scenario.description}
+            `
+        );
+    }
+
     const submitCallback = (data) => {
         // Build request
         const request = {
@@ -46,6 +63,8 @@ function Mitigation(props) {
     }
 
     useEffect(() => {
+        // Listen for errors
+        SocketService.errorListener(setErrorStateCallback);
         // Listen for refresh and next phase start
         SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback);
         SocketService.startJudgmentCallListener(lobbyStateCallbacks, setPageCallback, clientPlayer);
@@ -63,6 +82,18 @@ function Mitigation(props) {
                     label={instructionText}
                     submitCallback={submitCallback}
                 />
+                <Button 
+                    variant="outlined"
+                    color="secondary"
+                    onClick={onClickInstructions}>
+                    Instructions
+                </Button>
+                <Button 
+                    variant="text"
+                    color="secondary"
+                    onClick={onClickScenarioDetails}>
+                    Scenario Details
+                </Button>
             </Stack>
         </PageContainer>
     )

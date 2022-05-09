@@ -5,8 +5,10 @@ import Stack from '@mui/material/Stack';
 import PageContainer from './PageContainer';
 import { LobbyService } from '../services/LobbyService.js';
 import { GameStates } from '../constants/GameStates';
+import { useEffect } from 'react';
 
 function Home(props) {
+    const setErrorStateCallback = props.setErrorStateCallback;
     const setPageCallback = props.setPageCallback;
     const setPlayerNameCallback = props.setPlayerNameCallback;
     const setClientHostCallback = props.setClientHostCallback;
@@ -42,8 +44,7 @@ function Home(props) {
                 throw new Error('Lobby is not valid.');
             }
         } catch (error) {
-            // @TODO: error handling
-            console.log(error);
+            setErrorStateCallback(error);
         }
     };
 
@@ -68,8 +69,7 @@ function Home(props) {
                 }
             } catch (error) {
                 initLoad = true;
-                // @TODO: error handling
-                console.log(error);
+                setErrorStateCallback(error);
             }
         }
     };
@@ -85,7 +85,11 @@ function Home(props) {
                     Be careful of these known bugs:</p>
                     <ul>
                         <li>Create Lobby/Join Lobby stuck on loading screen.</li>
-                            <p>The loading shouldn't take more than 30 seconds. Please refresh and try again and keep doing that until it works.</p>
+                            <p>&emsp;&emsp;The loading shouldn't take more than 30 seconds. Please refresh and try again and keep doing that until it works.</p>
+                        <li>In the middle of the game, the ready/submit button isn't working.</li>
+                            <p>&emsp;&emsp;Whenever this happens, unfortunately everyone needs to refresh the page and restart the game.</p>
+                        <li>The ready status is more than the players in the lobby.</li>
+                            <p>&emsp;&emsp;This is a visual bug, it shouldn't block functionality.</p>
                     </ul>
                 <TextField 
                     required

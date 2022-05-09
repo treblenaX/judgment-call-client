@@ -12,25 +12,40 @@ import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import { SocketService } from '../services/SocketService';
+import { GameInstructions } from '../constants/GameInstructions';
 
 function Discussion(props) {
     const clientPlayer = props.clientPlayer;
     const focusPlayer = props.focusPlayer;
     const lobbyStateCallbacks = props.lobbyStateCallbacks;
     const setPageCallback = props.setPageCallback;
+    const setErrorStateCallback = props.setErrorStateCallback;
 
     // ui state
     const [dialogOpen, setDialogOpen] = useState(false);
     const [activeCol, setActiveCol] = useState(null);
 
     useState(() => {
+        // Listen for errors
+        SocketService.errorListener(setErrorStateCallback);
         // Listen for lobby state refresh
         SocketService.lobbyRefreshListener(lobbyStateCallbacks);
 
         SocketService.startMitigationListener(lobbyStateCallbacks, setPageCallback);
     }, []);
 
-    // TODO: Handle ready
+    const onClickInstructions = () => alert(GameInstructions.DISCUSSION);
+    const onClickScenarioDetails = () => { 
+        const scenario = clientPlayer.cards.scenario;
+
+        alert(
+            `${scenario.name}
+
+            ${scenario.description}
+            `
+        );
+    }
+
     const onClickReady = async (e) => {
         // Build request
         const request = {
@@ -87,6 +102,18 @@ function Discussion(props) {
                             Unready
                         </Button>
                     }
+                    <Button 
+                        variant="outlined"
+                        color="secondary"
+                        onClick={onClickInstructions}>
+                        Instructions
+                    </Button>
+                    <Button 
+                        variant="text"
+                        color="secondary"
+                        onClick={onClickScenarioDetails}>
+                        Scenario Details
+                    </Button>
                 </Stack>
             </PageContainer>
             <Dialog open={dialogOpen} onClose={onDialogClose}>
