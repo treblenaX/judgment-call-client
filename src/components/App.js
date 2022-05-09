@@ -16,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import { SocketService } from '../services/SocketService';
 
-const DEBUG = true;
+const DEBUG = false;
 const PAGE_IDS = [
   'home', 
   'lobby', 
