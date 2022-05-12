@@ -219,7 +219,7 @@ function App() {
   useEffect(() => {
     // SocketService.debug();
     if (errorState) {
-      toast.error(errorState);
+      toast.error('' + errorState);
     }
   }, [errorState]);
 

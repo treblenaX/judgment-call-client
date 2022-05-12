@@ -24,28 +24,31 @@ function Loading(props) {
     const setPageCallback = props.setPageCallback;
     // Set state of the game to redirect the page
     const setGameStateCallback = props.setGameStateCallback;
+    const setErrorStateCallback = props.setErrorStateCallback;
 
     // Loading state
     const [isLoaded, setLoaded] = useState(false);
 
     // ASYNC HELPERS
     const connectToLobby = async (request) => {
+        const callbacks = {
+            main: lobbyStateCallbacks,
+            client: setClientPlayerCallback,
+            loaded: setLoaded
+        }
+
         const lobbyResponse = (isClientHost) 
-            ? await LobbyService.createLobby(request) 
-            : await LobbyService.joinLobby(request);
+            ? await LobbyService.createLobby(request, setErrorStateCallback, callbacks) 
+            : await LobbyService.joinLobby(request, setErrorStateCallback, callbacks);
 
-        setClientPlayerCallback(lobbyResponse.clientPlayer);
+        // setClientPlayerCallback(lobbyResponse.clientPlayer);
         setLobbyCodeCallback(lobbyResponse.lobby.lobbyCode);
-
-        // Listen for lobby state refresh
-    
-        SocketService.lobbyRefreshListener(lobbyStateCallbacks, setClientPlayerCallback, setLoaded);
-        SocketService.errorListener(console.log);
         // setGameStateCallback(GameStates.LOBBY);
     };
 
     useEffect(() => {
         if (!isLoaded) {
+            console.log('requesting..');
             // Build request
             const request = {
                 playerName: playerName,
@@ -54,6 +57,7 @@ function Loading(props) {
     
             connectToLobby(request);
         } else {
+            console.log('loading', 'data loded!')
             // Direct user to `lobby`
             setPageCallback('lobby');
         }

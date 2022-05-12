@@ -15,22 +15,17 @@ function Home(props) {
     const setJoinLobbyCodeCallback = props.setJoinLobbyCodeCallback;
     const setGameStateCallback = props.setGameStateCallback;
 
-    let initLoad = true;    // To prevent multiple calls @TODO handle better
-
-    // TODO: Handle join click
     const onClickJoin = async (e) => {
         const name = document.getElementById('input-name').value;
         const code = document.getElementById('input-code').value;
 
         try {
-            initLoad = false;
             // Build request
             const request = {
                 lobbyCode: code
             };
-
             // Verify lobby code
-            const isValidLobby = await LobbyService.doesLobbyExist(request);
+            const isValidLobby = await LobbyService.doesLobbyExist(request, setErrorStateCallback);
 
             // After successful response - setPage to 'lobby'
             if (isValidLobby) {
@@ -51,28 +46,24 @@ function Home(props) {
     const onClickCreate = async (e) => {
         const name = document.getElementById('input-name').value;
 
-        if (initLoad) {
-            try {
-                initLoad = false;
-                // Handshake attempt with server
-                const isAlive = await LobbyService.isAPIAlive();
-    
-                // After successful response - setPage to 'lobby'
-                if (isAlive) {
-                    setPlayerNameCallback(name);
-                    setClientHostCallback(true);
-                    // Send user to loading page
-                    setPageCallback('loading');
-                    setGameStateCallback(GameStates.LOADING);
-                } else {
-                    throw new Error('Server connection error.');
-                }
-            } catch (error) {
-                initLoad = true;
-                setErrorStateCallback(error);
+        try {
+            // Handshake attempt with server
+            const isAlive = await LobbyService.isAPIAlive(setErrorStateCallback);
+
+            // After successful response - setPage to 'lobby'
+            if (isAlive) {
+                setPlayerNameCallback(name);
+                setClientHostCallback(true);
+                // Send user to loading page
+                setPageCallback('loading');
+                setGameStateCallback(GameStates.LOADING);
+            } else {
+                throw new Error('Server connection error.');
             }
+        } catch (error) {
+            setErrorStateCallback(error);
         }
-    };
+    }
 
     return (
         <PageContainer>

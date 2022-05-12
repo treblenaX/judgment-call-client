@@ -11,7 +11,7 @@ const BASE_CONNECT = 'connect';
 export var socket = null;
 
 export class SocketService {
-    static async joinLobby(request) {
+    static async joinLobby(request, lobbyStateCallbacks, setLoaded) {
         return new Promise(async (resolve, reject) => {
             try {
                 await this.verifySocketConnection();
@@ -20,7 +20,23 @@ export class SocketService {
 
                 socket.on(ServerSocketStates.PLAYER_CONNECTED_TO_LOBBY, (response) => {
                     if (!response.error) {
+                        const clientPlayer = response.clientPlayer;
+                        const lobby = response.lobby;
+                        const players = lobby.players;
+                        const readyStatus = lobby.readyStatus;
+                        const gameState = lobby.gameMaster.state;
+                        const gameMaster = lobby.gameMaster;
+                        const focusPlayer = gameMaster.focusPlayer;
+            
+                        lobbyStateCallbacks.setLobbyPlayers(players);
+                        lobbyStateCallbacks.setGameState(gameState);
+                        lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+                        lobbyStateCallbacks.setGameMaster(gameMaster);
+                        lobbyStateCallbacks.setClientPlayer(clientPlayer);
+                        lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+
                         resolve(response);
+                        setLoaded(true);
                     } else {
                         throw new Error(response.error);
                     }
@@ -43,7 +59,6 @@ export class SocketService {
 
                 // On connection - verify that it's connected.
                 socket.on(BASE_CONNECT, () => {
-                    
                     // @TODO: take out if not debug
                     SocketService.debug();
                     resolve(true);
@@ -98,7 +113,6 @@ export class SocketService {
             lobbyStateCallbacks.setGameState(gameState);
             lobbyStateCallbacks.setFocusPlayer(focusPlayer);
             lobbyStateCallbacks.setGameMaster(gameMaster);
-
             lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
 
             // @TODO: error handling
