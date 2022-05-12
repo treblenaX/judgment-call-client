@@ -7,6 +7,7 @@ import { SocketService } from '../services/SocketService';
 import { useEffect } from 'react';
 import { GameInstructions } from '../constants/GameInstructions';
 import Button from '@mui/material/Button';
+import { Rating } from '@mui/material';
 
 function Scenario(props) {
     const clientPlayer = props.clientPlayer;
@@ -75,10 +76,9 @@ function CardContainer(props) {
     const stakeholder = cards.stakeholder;
     const principle = cards.principle;
     const rating = cards.rating;
-    const scenario = cards.scenario;
 
     return (
-        <Stack spacing={2} direction='row'>
+        <Stack spacing={3} direction='row'>
             <Card 
                 type='Stakeholder'
                 id='0' 
@@ -107,7 +107,16 @@ function Card(props) {
     return (
         <div className='card' key={props.id}>
             <h1 className="card-type-text">{type}</h1>
-            <h3>{name}</h3>
+            {type === 'Rating' 
+                    ? <div>
+                        <Rating
+                            name="rating"
+                            value={props.payload.name}
+                            readOnly
+                        />
+                        <p>(out of 5 stars)</p>
+                        </div>  
+                    : <h3>{name}</h3>}
             <p>{description ? description : ''}</p>
         </div>
 

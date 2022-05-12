@@ -12,7 +12,6 @@ export var socket = null;
 
 export class SocketService {
     static async joinLobby(request) {
-        //
         return new Promise(async (resolve, reject) => {
             try {
                 await this.verifySocketConnection();
@@ -20,7 +19,6 @@ export class SocketService {
                 socket.volatile.emit(ClientSocketStates.CONNECT_TO_LOBBY, request);
 
                 socket.on(ServerSocketStates.PLAYER_CONNECTED_TO_LOBBY, (response) => {
-                    console.log(response);
                     if (!response.error) {
                         resolve(response);
                     } else {
@@ -87,6 +85,7 @@ export class SocketService {
     /** Listeners */
     static lobbyRefreshListener(lobbyStateCallbacks, setClientPlayer, setLoaded) {
         socket.on(ServerSocketStates.UPDATE_LOBBY_INFORMATION, (response) => {
+            console.log('loading data...');
             // const serverMessage = response.message;
             const lobby = response.lobby;
             const players = lobby.players;
@@ -107,8 +106,12 @@ export class SocketService {
             // refresh client player
             if (setClientPlayer) setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
 
+            console.log('data loaded.');
             // Set loaded init state if present
-            if (setLoaded) setLoaded(true);
+            if (setLoaded) {
+                console.log(setLoaded);
+                setLoaded(true);
+            }
         });
     }
 
