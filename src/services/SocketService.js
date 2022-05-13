@@ -12,44 +12,81 @@ export var socket = null;
 
 export class SocketService {
     static async joinLobby(request, lobbyStateCallbacks, setLoaded) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.verifySocketConnection();
-    
-                socket.volatile.emit(ClientSocketStates.CONNECT_TO_LOBBY, request);
+        await this.verifySocketConnection();
 
-                socket.on(ServerSocketStates.PLAYER_CONNECTED_TO_LOBBY, (response) => {
-                    if (!response.error) {
-                        const clientPlayer = response.clientPlayer;
-                        const lobby = response.lobby;
-                        const players = lobby.players;
-                        const readyStatus = lobby.readyStatus;
-                        const gameState = lobby.gameMaster.state;
-                        const gameMaster = lobby.gameMaster;
-                        const focusPlayer = gameMaster.focusPlayer;
-            
-                        lobbyStateCallbacks.setLobbyPlayers(players);
-                        lobbyStateCallbacks.setGameState(gameState);
-                        lobbyStateCallbacks.setFocusPlayer(focusPlayer);
-                        lobbyStateCallbacks.setGameMaster(gameMaster);
-                        lobbyStateCallbacks.setClientPlayer(clientPlayer);
-                        lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+        socket.emit(ClientSocketStates.CONNECT_TO_LOBBY, request);
 
-                        resolve(response);
-                        setLoaded(true);
-                    } else {
-                        throw new Error(response.error);
-                    }
-                });
-            } catch (error) {
-                reject(error);
-            }
+        const promise = new Promise(async (resolve, reject) => {
+            socket.on(ServerSocketStates.PLAYER_CONNECTED_TO_LOBBY, (response) => {
+                if (!response.error) {
+                    const clientPlayer = response.clientPlayer;
+                    const lobby = response.lobby;
+                    const players = lobby.players;
+                    const readyStatus = lobby.readyStatus;
+                    const gameState = lobby.gameMaster.state;
+                    const gameMaster = lobby.gameMaster;
+                    const focusPlayer = gameMaster.focusPlayer;
+        
+                    lobbyStateCallbacks.setLobbyPlayers(players);
+                    lobbyStateCallbacks.setGameState(gameState);
+                    lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+                    lobbyStateCallbacks.setGameMaster(gameMaster);
+                    lobbyStateCallbacks.setClientPlayer(clientPlayer);
+                    lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+
+                    resolve(response);
+                } else {
+                    throw new Error(response.error);
+                }
+            });
         });
+
+        return await promise; 
+        // return new Promise(async (resolve, reject) => {
+        //     try {
+        //         console.log('joining lobby socket');
+        //         await this.verifySocketConnection();
+        //         console.log('lobby socket verified');
+    
+        //         socket.emit(ClientSocketStates.CONNECT_TO_LOBBY, request, (err, responseData) => {
+        //             if (err) console.log(err);
+        //             else console.log('hi');
+        //         });
+
+        //         console.log('socket request information');
+        //         socket.on(ServerSocketStates.PLAYER_CONNECTED_TO_LOBBY, (response) => {
+        //             if (!response.error) {
+        //                 console.log('lobby socket joined');
+        //                 const clientPlayer = response.clientPlayer;
+        //                 const lobby = response.lobby;
+        //                 const players = lobby.players;
+        //                 const readyStatus = lobby.readyStatus;
+        //                 const gameState = lobby.gameMaster.state;
+        //                 const gameMaster = lobby.gameMaster;
+        //                 const focusPlayer = gameMaster.focusPlayer;
+            
+        //                 lobbyStateCallbacks.setLobbyPlayers(players);
+        //                 lobbyStateCallbacks.setGameState(gameState);
+        //                 lobbyStateCallbacks.setFocusPlayer(focusPlayer);
+        //                 lobbyStateCallbacks.setGameMaster(gameMaster);
+        //                 lobbyStateCallbacks.setClientPlayer(clientPlayer);
+        //                 lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
+
+        //                 resolve(response);
+        //                 setLoaded(true);
+        //             } else {
+        //                 throw new Error(response.error);
+        //             }
+        //         });
+        //     } catch (error) {
+        //         reject(error);
+        //     }
+        // });
     }
 
     static async verifySocketConnection() {
         return new Promise(async (resolve, reject) => {
-            if (!this.isSocketAlive()) { // Socket is not connected/initialized
+            // if (!this.isSocketAlive()) { // Socket is not connected/initialized
                 socket = io(SERVER_ENDPOINT);
 
                 // Timeout if the socket does not connect
@@ -59,40 +96,41 @@ export class SocketService {
 
                 // On connection - verify that it's connected.
                 socket.on(BASE_CONNECT, () => {
+                    console.log(socket);
                     // @TODO: take out if not debug
                     SocketService.debug();
                     resolve(true);
                 });
-            }
+            // }
         });
     }
 
     /** Review Functions */
     static sendReview(request) {
-        socket.volatile.emit(ClientSocketStates.SEND_REVIEW, request);
+        socket.emit(ClientSocketStates.SEND_REVIEW, request);
     }
 
     /** Discussion Functions */
     static updateDiscussionData(request) {
-        socket.volatile.emit(ClientSocketStates.UPDATE_DISCUSSION, request);
+        socket.emit(ClientSocketStates.UPDATE_DISCUSSION, request);
     }
     static toggleDiscussionReady(request) {
-        socket.volatile.emit(ClientSocketStates.DISCUSSION_READY, request);
+        socket.emit(ClientSocketStates.DISCUSSION_READY, request);
     }
 
     /** Mitigation Functions */
     static sendMitigation(request) {
-        socket.volatile.emit(ClientSocketStates.SEND_MITIGATION, request);
+        socket.emit(ClientSocketStates.SEND_MITIGATION, request);
     }
 
     /** Judgment Call Functions */
     static sendJudgmentCall(request) {
-        socket.volatile.emit(ClientSocketStates.SEND_JUDGMENT_CALL, request);
+        socket.emit(ClientSocketStates.SEND_JUDGMENT_CALL, request);
     }
 
     /** Ready Functions */
     static togglePlayerReady(request) {
-        socket.volatile.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
+        socket.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
     }
 
     static isSocketAlive = () => socket != null && socket.connected;

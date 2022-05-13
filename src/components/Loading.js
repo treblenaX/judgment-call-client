@@ -27,19 +27,20 @@ function Loading(props) {
     const setErrorStateCallback = props.setErrorStateCallback;
 
     // Loading state
-    const [isLoaded, setLoaded] = useState(false);
+    // const [isLoaded, setLoaded] = useState(false);
 
     // ASYNC HELPERS
     const connectToLobby = async (request) => {
+        console.log('connecting to lobby...');
         const callbacks = {
             main: lobbyStateCallbacks,
-            client: setClientPlayerCallback,
-            loaded: setLoaded
+            client: setClientPlayerCallback
         }
 
         const lobbyResponse = (isClientHost) 
             ? await LobbyService.createLobby(request, setErrorStateCallback, callbacks) 
             : await LobbyService.joinLobby(request, setErrorStateCallback, callbacks);
+        console.log('lobby connected.');
 
         // setClientPlayerCallback(lobbyResponse.clientPlayer);
         setLobbyCodeCallback(lobbyResponse.lobby.lobbyCode);
@@ -47,21 +48,23 @@ function Loading(props) {
     };
 
     useEffect(() => {
-        if (!isLoaded) {
+        // console.log(isLoaded);
+        // if (!isLoaded) {
             console.log('requesting..');
+            console.log('hi');
             // Build request
             const request = {
                 playerName: playerName,
                 lobbyCode: joinLobbyCode
             }
     
-            connectToLobby(request);
-        } else {
-            console.log('loading', 'data loded!')
-            // Direct user to `lobby`
-            setPageCallback('lobby');
-        }
-    }, [isLoaded]);
+            connectToLobby(request).then(() => setPageCallback('lobby'));
+        // } else {
+        //     console.log('loading', 'data loded!')
+        //     // Direct user to `lobby`
+        //     setPageCallback('lobby');
+        // }
+    }, []);
 
     return (
         <PageContainer>

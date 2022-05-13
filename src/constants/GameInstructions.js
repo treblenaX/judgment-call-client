@@ -24,7 +24,7 @@ Reviews can lightheartedly surface serious oversight and potential problems. Use
 Start thinking about how to mitigate the issues and empower the benefits, and get ready to talk about it in the 'Mitigation' phase after this.
     `,
     MITIGATION: `
-Choose one stakeholder, feature, harm, or theme that stood out in the discussion. How could the product be changed to prevent these problems? Consider both technical and social solutions.
+Choose one stakeholder, benefit, harm, or theme that stood out in the discussion. Based on the stakeholder experiences and what you talked about in your discussions, how could the product be changed to prevent these problems? Consider both technical and social solutions.
     `,
     JUDGMENT_CALL: `
 You've considered a wide range of perspectives, surfaced potential harms, and explored preventative design measures. Now it's time to make a judgment call.

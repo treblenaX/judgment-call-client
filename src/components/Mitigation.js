@@ -1,4 +1,5 @@
 import '../styles/Mitigation.scss';
+import React from 'react';
 import PageContainer from './PageContainer';
 import Header from './Header';
 import TextAreaModule from './TextAreaModule';
@@ -6,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import { SocketService } from '../services/SocketService';
 import { useEffect } from 'react';
 import { GameInstructions } from '../constants/GameInstructions';
-import { Button } from '@mui/material';
+import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Modal, Typography } from '@mui/material';
 
 const instructionText = `
     How could the product be changed to prevent these
@@ -21,19 +22,24 @@ function Mitigation(props) {
     const setClientPlayerCallback = props.setClientPlayerCallback;
     const setErrorStateCallback = props.setErrorStateCallback;
 
-    props = {
-        data: lobbyPlayers.map(player => {
-                const cards = player.cards;
-                const discussionData = player.data.discussion;
+    const dialogData = lobbyPlayers.map(player => {
+        const cards = player.cards;
+        const review = player.data.review;
+        const discussionData = player.data.discussion;
 
-                return {
-                    'name': cards.stakeholder.name,
-                    'benefit': discussionData.benefits,
-                    'harm': discussionData.harms,
-                    'theme': discussionData.themes
-                };
-            })
-    };
+        const data = {
+            review: review,
+            playerName: player.playerName,
+            stakeholder: cards.stakeholder.name,
+            principle: cards.principle.name,
+            rating: cards.rating.name,
+            benefits: discussionData.benefits,
+            harms: discussionData.harms,
+            themes: discussionData.themes
+        }
+
+        return (<div className="dialog-item"><DataDialog payload={data} /></div>);
+    });
 
     const onClickInstructions = () => {
         alert(GameInstructions.MITIGATION);
@@ -74,9 +80,31 @@ function Mitigation(props) {
         <PageContainer>
             <Stack spacing={2} direction='column'>
                 <Header title='MITIGATION' />
-                <p>Choose one stakeholder, feature, harm, or theme that stood out
+                <p>Choose one stakeholder, benefit, harm, or theme that stood out
     in the discussion. </p>
-                <Table data={props.data} />
+                <div className="dialog-container">
+                    {/* {
+                        dialogData
+                    } */}
+                    {
+                        dialogData[0]
+                    }
+                    {
+                        dialogData[0]
+                    }
+                    {
+                        dialogData[0]
+                    }
+                    {
+                        dialogData[0]
+                    }
+                    {
+                        dialogData[0]
+                    }
+                    {
+                        dialogData[0]
+                    }
+                </div>
                 <TextAreaModule
                     readyState={clientPlayer.readyState}
                     label={instructionText}
@@ -99,42 +127,66 @@ function Mitigation(props) {
     )
 }
 
-// TODO: Figure out how to have table headers properly aligned
-function Table(props) {
-    let stakeholders = [];
-    let benefits = [];
-    let harms = [];
-    let themes = [];
+function DataDialog(props) {
+    const data = props.payload;
+    const [open, setOpen] = React.useState(false);
+    const [scroll, setScroll] = React.useState('paper');
 
-    props.data.forEach(p => {
-        stakeholders.push(p.name);
-        p.benefit.forEach(b => benefits.push(b));
-        p.harm.forEach(h => harms.push(h));
-        p.theme.forEach(t => themes.push(t));
-    });
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const arrayToHTML = (array) => {
+        return array.map((data, index) => <li key={index}> {data}</li>);
+    }
 
     return (
-        <Stack spacing={2} direction='column'>
-            <TableRow key={0} name='STAKEHOLDERS' payload={stakeholders} />
-            <TableRow key={1} name='BENEFITS' payload={benefits} />
-            <TableRow key={2} name='HARMS' payload={harms} />
-            <TableRow key={3} name='THEMES' payload={themes} />
-        </Stack>
-    );
-}
-
-function TableRow(props) {
-    const name = props.name;
-    const payload = props.payload;
-    const html = payload.map(data => <span>{data}</span>);
-    return (
-        <Stack spacing={2} direction='row' justifyContent='center'>
-            <strong className='table-header'>{name}</strong>
-            <Stack spacing={payload.length} direction='column' justifyContent='center'>
-                {html}
-            </Stack>
-        </Stack>
-    )
+        <div>
+        <Button onClick={handleOpen}>Open {data.playerName} Summary</Button>
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            scroll={'paper'}
+        >
+            <DialogTitle>Player: {data.playerName}</DialogTitle>
+            <DialogContent dividers={scroll === 'paper'}>
+                <DialogContentText>
+                    <div className="modal-row">
+                        <h3>Player: {data.playerName}</h3> 
+                    </div>
+                    <div className="modal-row">
+                        <h3>Stakeholder: {data.stakeholder}</h3>
+                    </div>
+                    <div className="modal-row">
+                        <h3>Principle: {data.principle}</h3>
+                    </div>
+                    <div className="modal-row">
+                        <h3>Rating: {data.rating}/5</h3>
+                    </div>
+                    <div className="modal-row">
+                        <h3>Review: </h3> {data.review}
+                    </div>
+                    <div className="modal-row">
+                        Benefits:
+                        <ul>
+                            {arrayToHTML(data.benefits)}
+                        </ul>
+                    </div>
+                    <div className="modal-row">
+                        Harms:
+                        <ul>
+                            {arrayToHTML(data.harms)}
+                        </ul>
+                    </div>
+                    <div className="modal-row">
+                        Themes:
+                        <ul>
+                            {arrayToHTML(data.themes)}
+                        </ul>
+                    </div>
+                </DialogContentText>
+            </DialogContent>
+          </Dialog>
+        </div>
+      );
 }
 
 export default Mitigation;

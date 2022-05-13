@@ -50,7 +50,7 @@ export class LobbyService {
             };
 
             // On 'connection' - socket to join lobby
-            return await SocketService.joinLobby(newRequest, lobbyStateCallbacks, setLoaded);
+            return await SocketService.joinLobby(newRequest, lobbyStateCallbacks);
         } catch (error) {
             throw new Error(`createLobby error: ${error}`);
         }
@@ -72,15 +72,17 @@ export class LobbyService {
             // Check if the lobby exists
             const existenceUrl = baseUrl + 'isValid?lobbyCode=' + request.lobbyCode;
 
+            console.log('sent fetch');
             const existenceResponse = await fetch(existenceUrl)
                 .catch(err => setErrorStateCallback(err));
             const existenceResults = await existenceResponse.json();
+            console.log('done fetch');
 
             // Error guard
             if (existenceResults.error) throw new Error(existenceResults.error);
 
             // On 'connection' - socket to join lobby
-            return await SocketService.joinLobby(request, lobbyStateCallbacks, setLoaded);
+            return await SocketService.joinLobby(request, lobbyStateCallbacks);
         } catch (error) {
             setErrorStateCallback(`joinLobby error: ${error}`);
         }

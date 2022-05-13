@@ -1,8 +1,19 @@
 $color-gold: #A6924D;
+$color-dark-gray: #707070;
+$font-stack: 'Roboto', sans-serif;
 
 .table-header {
     text-align: center;
     color: $color-gold;
     font-family: 'Roboto Slab', serif;
     font-size: 1.5rem;
+}
+
+.dialog-container {
+    display: flex;
+    justify-content: center;
+}
+
+.dialog-item {
+    flex: 1;
 }
