@@ -83,26 +83,8 @@ function Mitigation(props) {
                 <p>Choose one stakeholder, benefit, harm, or theme that stood out
     in the discussion. </p>
                 <div className="dialog-container">
-                    {/* {
+                    {
                         dialogData
-                    } */}
-                    {
-                        dialogData[0]
-                    }
-                    {
-                        dialogData[0]
-                    }
-                    {
-                        dialogData[0]
-                    }
-                    {
-                        dialogData[0]
-                    }
-                    {
-                        dialogData[0]
-                    }
-                    {
-                        dialogData[0]
                     }
                 </div>
                 <TextAreaModule
