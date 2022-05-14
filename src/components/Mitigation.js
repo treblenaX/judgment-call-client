@@ -122,7 +122,7 @@ function DataDialog(props) {
 
     return (
         <div>
-        <Button onClick={handleOpen}>Open {data.playerName} Summary</Button>
+        <Button onClick={handleOpen}>Read {data.playerName} Summary</Button>
         <Dialog
             open={open}
             onClose={handleClose}
