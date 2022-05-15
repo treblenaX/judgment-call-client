@@ -39,8 +39,6 @@ export class FileDownloadService {
             headers += '\n';
         })
 
-        console.log(headers);
-
         var hiddenElement = document.createElement('a');
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(headers);
         hiddenElement.target = '_blank';

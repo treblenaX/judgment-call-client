@@ -31,7 +31,6 @@ function Loading(props) {
 
     // ASYNC HELPERS
     const connectToLobby = async (request) => {
-        console.log('connecting to lobby...');
         const callbacks = {
             main: lobbyStateCallbacks,
             client: setClientPlayerCallback
@@ -40,7 +39,6 @@ function Loading(props) {
         const lobbyResponse = (isClientHost) 
             ? await LobbyService.createLobby(request, setErrorStateCallback, callbacks) 
             : await LobbyService.joinLobby(request, setErrorStateCallback, callbacks);
-        console.log('lobby connected.');
 
         // setClientPlayerCallback(lobbyResponse.clientPlayer);
         setLobbyCodeCallback(lobbyResponse.lobby.lobbyCode);
@@ -50,8 +48,6 @@ function Loading(props) {
     useEffect(() => {
         // console.log(isLoaded);
         // if (!isLoaded) {
-            console.log('requesting..');
-            console.log('hi');
             // Build request
             const request = {
                 playerName: playerName,

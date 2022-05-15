@@ -44,6 +44,7 @@ function Judgment(props) {
             judgment: data,
             readyState: !clientPlayer.readyState
         };
+        console.log('Judgment ready request.');
 
         SocketService.sendJudgmentCall(request);
     }

@@ -9,6 +9,7 @@ const SOCKET_TIMEOUT = 5000;
 const BASE_CONNECT = 'connect';
 
 export var socket = null;
+var isFiring = false;
 
 export class SocketService {
     static async joinLobby(request, lobbyStateCallbacks, setLoaded) {
@@ -42,46 +43,6 @@ export class SocketService {
         });
 
         return await promise; 
-        // return new Promise(async (resolve, reject) => {
-        //     try {
-        //         console.log('joining lobby socket');
-        //         await this.verifySocketConnection();
-        //         console.log('lobby socket verified');
-    
-        //         socket.emit(ClientSocketStates.CONNECT_TO_LOBBY, request, (err, responseData) => {
-        //             if (err) console.log(err);
-        //             else console.log('hi');
-        //         });
-
-        //         console.log('socket request information');
-        //         socket.on(ServerSocketStates.PLAYER_CONNECTED_TO_LOBBY, (response) => {
-        //             if (!response.error) {
-        //                 console.log('lobby socket joined');
-        //                 const clientPlayer = response.clientPlayer;
-        //                 const lobby = response.lobby;
-        //                 const players = lobby.players;
-        //                 const readyStatus = lobby.readyStatus;
-        //                 const gameState = lobby.gameMaster.state;
-        //                 const gameMaster = lobby.gameMaster;
-        //                 const focusPlayer = gameMaster.focusPlayer;
-            
-        //                 lobbyStateCallbacks.setLobbyPlayers(players);
-        //                 lobbyStateCallbacks.setGameState(gameState);
-        //                 lobbyStateCallbacks.setFocusPlayer(focusPlayer);
-        //                 lobbyStateCallbacks.setGameMaster(gameMaster);
-        //                 lobbyStateCallbacks.setClientPlayer(clientPlayer);
-        //                 lobbyStateCallbacks.setLobbyReadyStatus(readyStatus);
-
-        //                 resolve(response);
-        //                 setLoaded(true);
-        //             } else {
-        //                 throw new Error(response.error);
-        //             }
-        //         });
-        //     } catch (error) {
-        //         reject(error);
-        //     }
-        // });
     }
 
     static async verifySocketConnection() {
@@ -96,7 +57,6 @@ export class SocketService {
 
                 // On connection - verify that it's connected.
                 socket.on(BASE_CONNECT, () => {
-                    console.log(socket);
                     // @TODO: take out if not debug
                     SocketService.debug();
                     resolve(true);
@@ -107,30 +67,54 @@ export class SocketService {
 
     /** Review Functions */
     static sendReview(request) {
-        socket.emit(ClientSocketStates.SEND_REVIEW, request);
+        if (!isFiring) {
+            socket.emit(ClientSocketStates.SEND_REVIEW, request);
+            isFiring = true;
+            setTimeout(() => isFiring = false, 1000);
+        }
     }
 
     /** Discussion Functions */
     static updateDiscussionData(request) {
-        socket.emit(ClientSocketStates.UPDATE_DISCUSSION, request);
+        if (!isFiring) {
+            socket.emit(ClientSocketStates.UPDATE_DISCUSSION, request);
+            isFiring = true;
+            setTimeout(() => isFiring = false, 1000);
+        }
     }
     static toggleDiscussionReady(request) {
-        socket.emit(ClientSocketStates.DISCUSSION_READY, request);
+        if (!isFiring) {
+            socket.emit(ClientSocketStates.DISCUSSION_READY, request);
+            isFiring = true;
+            setTimeout(() => isFiring = false, 1000);
+        }
     }
 
     /** Mitigation Functions */
     static sendMitigation(request) {
-        socket.emit(ClientSocketStates.SEND_MITIGATION, request);
+        if (!isFiring) {
+            socket.emit(ClientSocketStates.SEND_MITIGATION, request);
+            isFiring = true;
+            setTimeout(() => isFiring = false, 1000);
+        }
     }
 
     /** Judgment Call Functions */
     static sendJudgmentCall(request) {
-        socket.emit(ClientSocketStates.SEND_JUDGMENT_CALL, request);
+        if (!isFiring) {
+            socket.emit(ClientSocketStates.SEND_JUDGMENT_CALL, request);
+            isFiring = true;
+            setTimeout(() => isFiring = false, 1000);
+        }
     }
 
     /** Ready Functions */
     static togglePlayerReady(request) {
-        socket.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
+        if (!isFiring) {
+            socket.emit(ClientSocketStates.TOGGLE_PLAYER_READY, request);
+            isFiring = true;
+            setTimeout(() => isFiring = false, 1000);
+        }
     }
 
     static isSocketAlive = () => socket != null && socket.connected;
@@ -138,7 +122,6 @@ export class SocketService {
     /** Listeners */
     static lobbyRefreshListener(lobbyStateCallbacks, setClientPlayer, setLoaded) {
         socket.on(ServerSocketStates.UPDATE_LOBBY_INFORMATION, (response) => {
-            console.log('loading data...');
             // const serverMessage = response.message;
             const lobby = response.lobby;
             const players = lobby.players;
@@ -158,10 +141,8 @@ export class SocketService {
             // refresh client player
             if (setClientPlayer) setClientPlayer(prevState => players.find(player => player.pId == prevState.pId));
 
-            console.log('data loaded.');
             // Set loaded init state if present
             if (setLoaded) {
-                console.log(setLoaded);
                 setLoaded(true);
             }
         });
@@ -299,7 +280,6 @@ export class SocketService {
     static debug() {
         if (socket) {
             socket.onAny((event) => {
-                console.log(event);
             })
         }
     }

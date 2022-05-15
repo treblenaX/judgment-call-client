@@ -45,8 +45,6 @@ function Lobby(props) {
 
         // Send socket request
         SocketService.togglePlayerReady(request);
-
-        // Change local client player ready status on success
     };
 
     return (
@@ -56,12 +54,21 @@ function Lobby(props) {
                 <Divider/>
                 <PlayerList lobbyPlayers={lobbyPlayers}/>
                 <Divider/>
-                <Button 
-                    variant="contained"
-                    color="secondary"
-                    onClick={onClickReady}>
-                    Ready
-                </Button>
+                {
+                    (!clientPlayer.readyState)
+                        ? <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={onClickReady}>
+                            Ready
+                        </Button>
+                        : <Button
+                            variant="primary"
+                            color="secondary"
+                            onClick={onClickReady}>
+                            Unready
+                        </Button>
+                }
             </Stack>
         </PageContainer>
     );

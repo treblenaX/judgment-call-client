@@ -117,7 +117,8 @@ function Card(props) {
                         <p>(out of 5 stars)</p>
                         </div>  
                     : <h3>{name}</h3>}
-            <p>{description ? description : ''}</p>
+            {/* <p>{description ? description : ''}</p> */}
+            <div><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam porttitor enim vel ligula auctor efficitur. Duis non aliquet ante, ut lobortis risus. Suspendisse lacinia massa eu egestas pretium. In dignissim ut nulla in commodo. Nullam non quam id ante sollicitudin luctus. Etiam sagittis, neque eget lacinia porttitor, nisl mi dignissim diam, ut</p></div>
         </div>
 
     )

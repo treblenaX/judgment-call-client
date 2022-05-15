@@ -73,15 +73,7 @@ function Home(props) {
                     You'll be playing the game with a minimum of 4 players and a maximum of 6 players.
                 </p>
                 <p>
-                    Be careful of these known bugs:</p>
-                    <ul>
-                        <li>Create Lobby/Join Lobby stuck on loading screen.</li>
-                            <p>&emsp;&emsp;The loading shouldn't take more than 30 seconds. Please refresh and try again and keep doing that until it works.</p>
-                        <li>In the middle of the game, the ready/submit button isn't working.</li>
-                            <p>&emsp;&emsp;Whenever this happens, unfortunately everyone needs to refresh the page and restart the game.</p>
-                        <li>The ready status is more than the players in the lobby.</li>
-                            <p>&emsp;&emsp;This is a visual bug, it shouldn't block functionality.</p>
-                    </ul>
+                    Please note: This is the very first prototype of an online adaptation of Judgment Call. If there's ever any errors. Please refresh and restart the whole game.</p>
                 <TextField 
                     required
                     fullWidth

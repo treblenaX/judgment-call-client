@@ -72,11 +72,9 @@ export class LobbyService {
             // Check if the lobby exists
             const existenceUrl = baseUrl + 'isValid?lobbyCode=' + request.lobbyCode;
 
-            console.log('sent fetch');
             const existenceResponse = await fetch(existenceUrl)
                 .catch(err => setErrorStateCallback(err));
             const existenceResults = await existenceResponse.json();
-            console.log('done fetch');
 
             // Error guard
             if (existenceResults.error) throw new Error(existenceResults.error);
